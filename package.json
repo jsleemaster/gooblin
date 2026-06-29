@@ -20,6 +20,13 @@
     "product-engineering",
     "scope-control"
   ],
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "validate:claims": "node scripts/validate-claims.mjs",
+    "validate:fixtures": "node scripts/validate-fixtures.mjs",
+    "validate:manifests": "node scripts/validate-manifests.mjs",
+    "validate:skill-pack": "node scripts/validate-skill-pack.mjs"
+  },
   "files": [
     "AGENTS.md",
     "skills/",
@@ -29,6 +36,7 @@
     "adapters/",
     "evals/",
     "assets/",
+    "scripts/",
     ".agents/",
     ".claude-plugin/",
     ".codex-plugin/",

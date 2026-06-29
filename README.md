@@ -196,6 +196,7 @@ This repo should stay boring.
 - Keep hooks tiny and dependency-free.
 - Keep plugin manifests aligned.
 - Update examples when behavior changes.
+- Run `npm run validate` before release.
 - Do not add runtime scaffolding unless explicitly needed.
 - Do not add fake automation.
 
