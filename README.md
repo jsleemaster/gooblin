@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 1.1.0" src="https://img.shields.io/badge/version-1.1.0-111111">
+  <img alt="version 1.1.1" src="https://img.shields.io/badge/version-1.1.1-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">

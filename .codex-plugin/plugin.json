@@ -1,6 +1,6 @@
 {
   "name": "gooblin",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A geeky product-engineering team for AI coding agents.",
   "author": "jsleemaster",
   "homepage": "https://github.com/jsleemaster/gooblin",
@@ -30,7 +30,7 @@
     ],
     "websiteURL": "https://github.com/jsleemaster/gooblin",
     "defaultPrompt": [
-      "Use Gooblin council mode for this task.",
+      "Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.",
       "Review this diff with Gooblin.",
       "Find the smallest safe shippable change."
     ],
