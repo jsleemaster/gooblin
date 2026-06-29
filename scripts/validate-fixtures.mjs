@@ -6,6 +6,13 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function directoriesIn(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
+
 const metrics = [
   'task_solved',
   'unnecessary_code_avoided',
@@ -22,6 +29,7 @@ for (const metric of metrics) {
   assert(rubric.includes(metric), `evals/rubric.md must include ${metric}`);
 }
 assert(rubric.includes('Score each metric from 0 to 5'), 'rubric must use 0 to 5 scoring');
+assert(rubric.includes('The answer should default to the user\'s language'), 'rubric must include language handling rule');
 
 const benchmarking = fs.readFileSync('docs/benchmarking.md', 'utf8');
 for (const phrase of [
@@ -33,11 +41,13 @@ for (const phrase of [
   assert(benchmarking.includes(phrase), `docs/benchmarking.md missing: ${phrase}`);
 }
 
-for (const fixture of ['overbuilt-date-picker', 'architecture-astronauting', 'debugging-without-repro', 'yak-shaving-mvp']) {
+const fixtureIndex = fs.readFileSync('evals/fixtures/README.md', 'utf8');
+for (const fixture of directoriesIn('evals/fixtures')) {
   const prompt = `evals/fixtures/${fixture}/prompt.md`;
   const expected = `evals/fixtures/${fixture}/expected.md`;
   assert(fs.existsSync(prompt), `${prompt} must exist`);
   assert(fs.existsSync(expected), `${expected} must exist`);
+  assert(fixtureIndex.includes(`(${fixture}/)`), `evals/fixtures/README.md must link ${fixture}/`);
   const expectedText = fs.readFileSync(expected, 'utf8');
   for (const heading of ['## Good Gooblin-Shaped Answer', '## Common Baseline Failure Modes', '## Scoring Notes']) {
     assert(expectedText.includes(heading), `${expected} missing ${heading}`);

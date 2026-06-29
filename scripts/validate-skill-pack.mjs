@@ -42,6 +42,11 @@ for (const phrase of [
   assert(cursorRule.includes(phrase), `.cursor/rules/gooblin.mdc missing: ${phrase}`);
 }
 
+const shipcheck = fs.readFileSync('commands/shipcheck.md', 'utf8');
+for (const phrase of ['Working tree review', 'Branch review', 'Release review', 'numbered findings']) {
+  assert(shipcheck.includes(phrase), `commands/shipcheck.md missing: ${phrase}`);
+}
+
 const adaptersIndex = fs.readFileSync('adapters/README.md', 'utf8');
 for (const adapter of ['codex', 'claude-code', 'gemini', 'opencode', 'devin', 'hermes', 'generic-agent', 'cursor', 'continue']) {
   assert(fs.existsSync(`adapters/${adapter}.md`), `adapters/${adapter}.md must exist`);

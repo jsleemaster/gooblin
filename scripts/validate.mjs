@@ -6,6 +6,7 @@ const scripts = [
   'scripts/validate-manifests.mjs',
   'scripts/validate-skill-pack.mjs',
   'scripts/validate-fixtures.mjs',
+  'scripts/validate-hooks.mjs',
   'scripts/validate-maintenance.mjs',
   'scripts/validate-claims.mjs',
 ];

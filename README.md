@@ -148,7 +148,7 @@ The character commands are direct-call shortcuts for users who already know whic
 | `/ground` | Advanced shortcut: Ground Control only, for architecture and product fit. |
 | `/duck` | Advanced shortcut: Rubber Duck only, for debugging, reproduction, and contradiction finding. |
 | `/yak` | Advanced shortcut: Yak Shaver only, for scope control and next shippable move. |
-| `/shipcheck` | Advanced shortcut: final pre-ship review before calling work done. |
+| `/shipcheck` | Advanced shortcut: final working-tree, branch, or release review before calling work done. |
 
 In some agents, commands may be exposed as skills instead of slash commands.
 

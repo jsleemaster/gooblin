@@ -19,6 +19,7 @@ They are not benchmarks. They do not measure speed, cost, safety, or quality acr
 | [overbuilt-date-picker](overbuilt-date-picker/) | Cuts dependency, wrapper, and timezone creep. |
 | [architecture-astronauting](architecture-astronauting/) | Rejects abstractions before they pay rent. |
 | [debugging-without-repro](debugging-without-repro/) | Requires reproduction before fixing. |
+| [multilingual-korean](multilingual-korean/) | Preserves the user's language while keeping code and technical literals intact. |
 | [yak-shaving-mvp](yak-shaving-mvp/) | Protects the next shippable slice from rabbit holes. |
 | [unsafe-auth-shortcut.md](unsafe-auth-shortcut.md) | Preserves the safety floor. |
 
