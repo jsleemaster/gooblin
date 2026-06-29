@@ -1,15 +1,17 @@
 # Plugin Distribution
 
-Gooblin is distributed as an open-source plugin-style Agent Skills repository.
+Gooblin is distributed as an open-source plugin-style Agent Skills repository. It is plugin-first and skill-pack-compatible.
 
 The repository shape is inspired by Ponytail-style plugin distribution, but Gooblin does not copy Ponytail content. It uses the idea of a public repo that contains agent-readable instructions, skills, commands, hooks, plugin manifests, and adapter folders.
 
 ## Distribution Goals
 
 - Work as a plugin or extension where compatible agents support that model.
+- Stay usable even when plugin support is unavailable.
 - Work as a manual skill pack where agents can read repository files.
 - Keep package metadata minimal and distribution-only.
 - Avoid app, runtime, framework, cloud agent, or messaging bot behavior.
+- Require no central server, accounts, API keys, telemetry, or cloud services.
 
 ## Included Surfaces
 
@@ -23,6 +25,8 @@ The repository shape is inspired by Ponytail-style plugin distribution, but Goob
 - `plugin.yaml`: lightweight metadata for simple plugin loaders.
 - `package.json`: open-source distribution metadata only.
 
+Agent-specific folders are adapters, not separate products. They should stay small, readable, and easy to delete or adapt.
+
 ## Hook Policy
 
 Hooks must remain tiny and safe:
@@ -34,6 +38,19 @@ Hooks must remain tiny and safe:
 - No noisy failures when environment variables or plugin support are missing.
 
 Hooks may remind the agent that Gooblin mode exists and point to bundled skills and commands.
+
+Hooks are optional. The skills must remain useful if every hook is disabled.
+
+## Skill Pack Compatibility
+
+Keep skills readable as plain Markdown:
+
+- Do not require a central service to understand or run Gooblin.
+- Do not hide core behavior inside hook scripts.
+- Do not make plugin manifests the only source of truth.
+- Keep `AGENTS.md`, `skills/`, and `commands/` enough for manual use.
+- Keep `package.json` limited to open-source plugin metadata.
+- Do not add app dependencies, build tooling, or runtime scaffolding.
 
 ## Claims Policy
 

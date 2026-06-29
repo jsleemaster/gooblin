@@ -2,36 +2,38 @@
 
 ## v0.1
 
-- Docs-first open-source plugin-style skill pack.
+- Open-source plugin-style repo.
 - MIT license.
-- `AGENTS.md`.
-- Six skills: shared kernel, four teammates, and council mode.
+- README.
+- AGENTS.md.
+- Skills.
 - Commands.
+- Plugin manifests.
+- Reminder-only hooks.
+- Install docs.
 - Examples.
 - Eval rubric.
-- Minimal plugin manifests.
-- Reminder-only hooks.
-- Package metadata for distribution only.
 
 ## v0.2
 
-- Verified install guides for popular compatible coding agents.
-- Stronger examples.
-- Logo asset integration if provided.
-- Adapter notes based on real compatibility checks.
+- Verify Claude Code plugin install.
+- Verify Codex plugin install.
+- Add logo asset.
+- Add screenshots or demo GIF if available.
+- Add more examples.
 
 ## v0.3
 
-- Optional adapters.
-- Optional hooks.
-- More eval cases.
-- Clearer packaging guidance if plugin ecosystems stabilize.
+- Add optional adapters for more agents.
+- Add safer hook modes.
+- Add eval fixtures.
 
 ## v1.0
 
-- Stable skill pack for real repo usage.
+- Stable plugin-style Agent Skills pack.
 - Verified installation paths.
-- Maintained compatibility notes.
+- Real examples.
+- No fake benchmarks.
 
 ## Non-Goals
 

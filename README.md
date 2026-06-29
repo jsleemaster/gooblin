@@ -15,7 +15,7 @@ Gooblin gives your coding agent four brutally practical teammates:
 
 Gooblin is an open-source plugin-style Agent Skills pack. It is designed to be installed by compatible AI coding agents, or read manually by agents that can use `AGENTS.md`, `skills/`, `commands/`, and copied rules.
 
-It is not an app, runtime, framework, cloud agent, messaging bot, or npm library. The minimal package metadata exists only to help distribute the skill pack.
+It is not an app, runtime, framework, cloud agent, messaging bot, or npm library. `package.json` exists only as minimal open-source plugin metadata. Gooblin does not add app dependencies, build tooling, or runtime scaffolding.
 
 ## Why Gooblin Exists
 
@@ -72,6 +72,8 @@ Gooblin is designed to be installed like a plugin-style Agent Skills pack.
 
 These install paths are intended for compatible agents and plugin systems. They should be treated as expected distribution shapes until verified in each agent marketplace or installer.
 
+Plugin support may vary by agent. If plugin installation is not available, Gooblin still works as a readable skill pack. Hooks are optional and only used for activation/context injection.
+
 ### Claude Code
 
 ```bash
@@ -79,33 +81,30 @@ These install paths are intended for compatible agents and plugin systems. They 
 /plugin install gooblin@gooblin
 ```
 
-### Codex-style plugin agents
+### Codex
 
-Point the compatible plugin installer at this public repository:
-
-```text
-https://github.com/jsleemaster/gooblin
+```bash
+codex plugin marketplace add jsleemaster/gooblin
+codex
 ```
 
-The repository includes `.codex-plugin/plugin.json`, `plugin.yaml`, `skills/`, `commands/`, and reminder-only hooks.
+Then open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
+
+The repository includes `.codex-plugin/plugin.json`, `plugin.yaml`, `skills/`, `commands/`, and optional reminder-only hooks.
 
 ### Manual fallback
 
-For agents without plugin installation, copy or reference the relevant files:
+If your agent does not support plugins yet, copy or reference:
 
-```bash
-git clone https://github.com/jsleemaster/gooblin.git
+- `AGENTS.md`
+- `skills/`
+- `commands/`
+
+Then ask your coding agent:
+
+```text
+Use Gooblin council mode for this task.
 ```
-
-Then point the agent at:
-
-- `AGENTS.md` for repo-level behavior.
-- `skills/gooblin/SKILL.md` for full council mode.
-- `skills/clipper/SKILL.md` for minimal-code review.
-- `skills/ground-control/SKILL.md` for product architecture review.
-- `skills/rubber-duck/SKILL.md` for debugging review.
-- `skills/yak-shaver/SKILL.md` for scope review.
-- `commands/` for command-style prompts.
 
 ## Usage Examples
 
@@ -169,30 +168,38 @@ Gooblin will not be:
 
 ### v0.1
 
-- Docs-first open-source plugin-style skill pack.
+- Open-source plugin-style repo.
 - MIT license.
+- README.
 - AGENTS.md.
-- Six skills including the shared kernel and full council mode.
-- Command docs.
-- Reminder-only hooks.
+- Skills.
+- Commands.
 - Plugin manifests.
-- Examples and eval rubric.
+- Minimal hooks.
+- Install docs.
+- Examples.
+- Eval rubric.
 
 ### v0.2
 
-- Verified install guides for popular compatible agents.
-- Stronger examples.
-- Logo asset integration if provided.
+- Verify Claude Code plugin install.
+- Verify Codex plugin install.
+- Add logo asset.
+- Add screenshots or demo GIF if available.
+- Add more examples.
 
 ### v0.3
 
-- Optional adapters.
-- Optional hooks.
-- More eval cases.
+- Add optional adapters for more agents.
+- Add safer hook modes.
+- Add eval fixtures.
 
 ### v1.0
 
-- Stable skill pack for real repo usage.
+- Stable plugin-style Agent Skills pack.
+- Verified install paths.
+- Real examples.
+- No fake benchmarks.
 
 ## Contributing
 
