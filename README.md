@@ -30,6 +30,9 @@ He watches your agent add a helper for one condition, draw a service layer aroun
 
 Then he calls the team.
 
+Gooblin is not here to make your agent louder.
+It is here to make your agent answer to a practical engineering room before it touches the repo.
+
 ## Before / After
 
 User asks for a small settings change.
@@ -54,6 +57,10 @@ The point is not fewer lines. The point is fewer unnecessary decisions.
 | **Yak Shaver** | Scope cutter and delivery PM. | If it does not unblock the goal, defer it. |
 
 ## How It Works
+
+You do not need to pick a teammate.
+
+Start with `/gooblin`. The router decides whether the task needs a cutter, architect, debugger, scope guard, shipcheck, or the full council.
 
 Before writing code, `/gooblin` diagnoses the task type and routes to the smallest useful teammate set.
 
@@ -129,16 +136,20 @@ Stable surfaces and claim rules are documented in [stability](docs/stability.md)
 
 ## Commands
 
+Most users should start with `/gooblin`.
+
+The character commands are direct-call shortcuts for users who already know which review mode they want.
+
 | Command | What it does |
 | --- | --- |
-| `/gooblin` | Primary interface. Diagnoses the task and routes to the smallest useful teammate set. |
+| `/gooblin` | Primary interface. Start here; it diagnoses the task and routes to the smallest useful teammate set. |
 | `/clip` | Advanced shortcut: The Clipper only, for code, dependencies, rewrites, and unnecessary abstractions. |
 | `/ground` | Advanced shortcut: Ground Control only, for architecture and product fit. |
 | `/duck` | Advanced shortcut: Rubber Duck only, for debugging, reproduction, and contradiction finding. |
 | `/yak` | Advanced shortcut: Yak Shaver only, for scope control and next shippable move. |
 | `/shipcheck` | Advanced shortcut: final pre-ship review before calling work done. |
 
-The character commands exist for direct calls, but most users should start with `/gooblin`. In some agents, commands may be exposed as skills instead of slash commands.
+In some agents, commands may be exposed as skills instead of slash commands.
 
 ## Examples
 
