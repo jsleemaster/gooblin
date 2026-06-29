@@ -1,84 +1,65 @@
 # Gooblin
 
 <p align="center">
-  <img src="assets/logo.png" alt="Gooblin mascot and team" width="360">
+  <img src="assets/logo.png" alt="Gooblin mascot and team" width="280">
 </p>
 
-Your agent has ideas. Gooblin has scissors.
+<p align="center">
+  <strong>Your agent has ideas. Gooblin has scissors.</strong><br>
+  A geeky product-engineering team for AI coding agents.<br>
+  <em>Less nonsense. More shippable code.</em>
+</p>
 
-A geeky product-engineering team for AI coding agents.
+<p align="center">
+  <img alt="version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-111111">
+  <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
+  <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
+  <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
+  <img alt="no telemetry" src="https://img.shields.io/badge/telemetry-no-111111">
+</p>
 
-Less nonsense. More shippable code.
+Gooblin is an open-source plugin-style Agent Skills pack. It is not an app, runtime, framework, cloud agent, messaging bot, or npm library.
 
-**Korean reading:** 고오블린
-
-![version 0.1.0](https://img.shields.io/badge/version-0.1.0-111111)
-![license MIT](https://img.shields.io/badge/license-MIT-111111)
-![plugin style](https://img.shields.io/badge/plugin--style-yes-111111)
-![agent skills](https://img.shields.io/badge/agent--skills-yes-111111)
-![no telemetry](https://img.shields.io/badge/telemetry-no-111111)
+It installs where compatible agents support plugins. It still works as plain Markdown when they do not.
 
 ## The Goblin In The Room
 
-You know him.
-Tall hat. Bad grin. Worse patience.
-He watches your agent install a library for a native input,
-draw a service layer around one function,
-and redesign the roadmap to fix a button.
+You know him. Tall hat. Bad grin. Worse patience.
+
+He watches your agent install a library for a native input, draw a service layer around one function, and redesign the roadmap to fix a button.
 
 Then he calls the team.
-
-Gooblin puts a weird senior product-engineering team inside your AI coding agent.
-
-It is open source. It is plugin-first. It still works as plain Markdown when plugins are not available.
 
 ## Before / After
 
 User asks for a simple profile form birthday field.
 
-Before Gooblin:
-
-- The agent adds a date picker dependency.
-- It creates a wrapper component.
-- It adds custom styles.
-- It starts discussing timezone handling.
-- It expands the scope of the profile form.
-
-With Gooblin:
-
-- The Clipper checks the native input first.
-- Ground Control rejects the unnecessary abstraction.
-- Rubber Duck asks what behavior actually needs testing.
-- Yak Shaver cuts timezone discussion unless the product requires it.
+| Before Gooblin | With Gooblin |
+| --- | --- |
+| Adds a date picker dependency. | The Clipper checks native input first. |
+| Creates a wrapper component. | Ground Control rejects the unnecessary abstraction. |
+| Adds custom styles. | Rubber Duck asks what behavior actually needs testing. |
+| Starts discussing timezone handling. | Yak Shaver cuts timezone discussion unless required. |
+| Expands profile form scope. | The change stays boring. |
 
 ```html
 <input type="date" name="birthday" />
 ```
 
-The point is not fewer lines.
-The point is fewer unnecessary decisions.
+The point is not fewer lines. The point is fewer unnecessary decisions.
 
 ## The Team
 
-**The Clipper** cuts unnecessary code.
-Minimal-code senior engineer. Ponytail/Greybeard-inspired, but safer.
-Smallest safe change wins.
-
-**Ground Control** drags architecture back to earth.
-Anti-Architecture-Astronaut product architect.
-Every abstraction must pay rent.
-
-**Rubber Duck** exposes broken assumptions.
-Debugging coach.
-Do not fix what you have not reproduced.
-
-**Yak Shaver** kills scope creep.
-Scope cutter.
-If it does not unblock the goal, defer it.
+| Teammate | Job | Belief |
+| --- | --- | --- |
+| **The Clipper** | Minimal-code senior engineer. Ponytail/Greybeard-inspired, but safer. | Smallest safe change wins. |
+| **Ground Control** | Anti-Architecture-Astronaut product architect. | Every abstraction must pay rent. |
+| **Rubber Duck** | Debugging coach and contradiction finder. | Do not fix what you have not reproduced. |
+| **Yak Shaver** | Scope cutter and delivery PM. | If it does not unblock the goal, defer it. |
 
 ## How It Works
 
-Before writing code, Gooblin forces the agent through:
+Before writing code, Gooblin forces the agent through this ladder:
 
 1. What is the actual product goal?
 2. What is the expected behavior?
@@ -92,15 +73,7 @@ Before writing code, Gooblin forces the agent through:
 
 Gooblin is lazy about unnecessary work, not lazy about understanding the problem.
 
-Never cut:
-
-- auth/authz
-- validation
-- secrets handling
-- data-loss protection
-- rollback paths
-- accessibility basics
-- user-stated constraints
+Never cut: auth/authz, validation, secrets handling, data-loss protection, rollback paths, accessibility basics, or user-stated constraints.
 
 ## Install
 
@@ -138,11 +111,9 @@ Then ask your coding agent:
 Use Gooblin council mode for this task.
 ```
 
-Plugin support may vary by agent.
-If plugin installation is not available, Gooblin still works as a readable skill pack.
+Plugin support may vary by agent. If plugin installation is not available, Gooblin still works as a readable skill pack.
 
-Hooks are optional.
-They only inject Gooblin context and should never mutate user files automatically.
+Hooks are optional. They only inject Gooblin context and should never mutate user files automatically.
 
 ## Commands
 
@@ -159,10 +130,12 @@ In some agents, commands may be exposed as skills instead of slash commands.
 
 ## Examples
 
-- [Overbuilt date picker](examples/overbuilt-date-picker/)
-- [Architecture astronauting](examples/architecture-astronauting/)
-- [Debugging without reproduction](examples/debugging-without-repro/)
-- [Yak-shaving an MVP](examples/yak-shaving-mvp/)
+| Example | What it catches |
+| --- | --- |
+| [Overbuilt date picker](examples/overbuilt-date-picker/) | Dependency and wrapper creep. |
+| [Architecture astronauting](examples/architecture-astronauting/) | Plugin platforms, event buses, and service layers before need. |
+| [Debugging without reproduction](examples/debugging-without-repro/) | Fixing before expected/actual/repro are clear. |
+| [Yak-shaving an MVP](examples/yak-shaving-mvp/) | Redesigning the system before shipping the page. |
 
 These examples are not benchmarks.
 
@@ -174,34 +147,27 @@ Gooblin will not claim "less code," "faster," "cheaper," or "safer" until measur
 
 Planned measurements:
 
-- diff size
-- dependency additions avoided
-- tests added
-- scope reduced
-- verification quality
-- safety regressions
+| Metric | Why it matters |
+| --- | --- |
+| diff size | Catches unnecessary churn. |
+| dependency additions avoided | Tracks native/platform reuse. |
+| tests added | Checks behavior changes are verified. |
+| scope reduced | Measures avoided rabbit holes. |
+| verification quality | Separates confidence from proof. |
+| safety regressions | Makes sure cutting did not cut the floor. |
 
-If benchmarks are added later, include:
-
-- method
-- repo/task set
-- model/agent version
-- sample size
-- limitations
-- reproduction instructions
+If benchmarks are added later, include method, repo/task set, model/agent version, sample size, limitations, and reproduction instructions.
 
 ## Development
 
 This repo should stay boring.
 
-When changing Gooblin:
-
-- keep skills readable as plain Markdown
-- keep hooks tiny and dependency-free
-- keep plugin manifests aligned
-- update examples when behavior changes
-- do not add runtime scaffolding unless explicitly needed
-- do not add fake automation
+- Keep skills readable as plain Markdown.
+- Keep hooks tiny and dependency-free.
+- Keep plugin manifests aligned.
+- Update examples when behavior changes.
+- Do not add runtime scaffolding unless explicitly needed.
+- Do not add fake automation.
 
 `package.json` exists only as minimal open-source plugin metadata. Do not add app dependencies, build tooling, or runtime scaffolding.
 
