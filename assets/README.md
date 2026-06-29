@@ -1,18 +1,16 @@
 # Assets
 
-No image assets are included in v0.1.
-
-When the Gooblin logo is ready, add it here as:
+The Gooblin logo is included as:
 
 ```text
 assets/logo.png
 ```
 
-Expected direction:
+Visual direction:
 
 - Black-only rough MS Paint-like doodle on white.
 - Large mischievous goblin boss.
 - Four small geeky developer/product teammates nearby.
 - Weird, practical, senior, cynical, shippable.
 
-Do not generate or commit placeholder logo art just to satisfy manifests.
+Do not replace the logo with generated placeholder art just to satisfy manifests.

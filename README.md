@@ -1,78 +1,108 @@
 # Gooblin
 
+![Gooblin mascot and team](assets/logo.png)
+
+Your agent has ideas. Gooblin has scissors.
+
 A geeky product-engineering team for AI coding agents.
+
+Less nonsense. More shippable code.
 
 **Korean reading:** 고오블린
 
-Gooblin gives your coding agent four brutally practical teammates:
+![version 0.1.0](https://img.shields.io/badge/version-0.1.0-111111)
+![license MIT](https://img.shields.io/badge/license-MIT-111111)
+![plugin style](https://img.shields.io/badge/plugin--style-yes-111111)
+![agent skills](https://img.shields.io/badge/agent--skills-yes-111111)
+![no telemetry](https://img.shields.io/badge/telemetry-no-111111)
 
-- **The Clipper** cuts unnecessary code.
-- **Ground Control** drags architecture back to earth.
-- **Rubber Duck** exposes broken assumptions.
-- **Yak Shaver** kills scope creep.
+## The Goblin In The Room
 
-**Less nonsense. More shippable code.**
+You know him.
+Tall hat. Bad grin. Worse patience.
+He watches your agent install a library for a native input,
+draw a service layer around one function,
+and redesign the roadmap to fix a button.
 
-Gooblin is an open-source plugin-style Agent Skills pack. It is designed to be installed by compatible AI coding agents, or read manually by agents that can use `AGENTS.md`, `skills/`, `commands/`, and copied rules.
+Then he calls the team.
 
-It is not an app, runtime, framework, cloud agent, messaging bot, or npm library. `package.json` exists only as minimal open-source plugin metadata. Gooblin does not add app dependencies, build tooling, or runtime scaffolding.
+Gooblin puts a weird senior product-engineering team inside your AI coding agent.
 
-## Why Gooblin Exists
+It is open source. It is plugin-first. It still works as plain Markdown when plugins are not available.
 
-Most AI coding agents are too quick to guess, too eager to write code, and too comfortable inventing abstractions. Gooblin puts a weird senior product-engineering team in the loop so the agent slows down where it matters:
+## Before / After
 
-- Understand the product goal before implementation.
-- Prefer the smallest safe shippable change.
-- Reproduce bugs before fixing them.
-- Cut optional work that does not unblock the goal.
-- Verify results instead of trusting confidence.
+User asks for a simple profile form birthday field.
+
+Before Gooblin:
+
+- The agent adds a date picker dependency.
+- It creates a wrapper component.
+- It adds custom styles.
+- It starts discussing timezone handling.
+- It expands the scope of the profile form.
+
+With Gooblin:
+
+- The Clipper checks the native input first.
+- Ground Control rejects the unnecessary abstraction.
+- Rubber Duck asks what behavior actually needs testing.
+- Yak Shaver cuts timezone discussion unless the product requires it.
+
+```html
+<input type="date" name="birthday" />
+```
+
+The point is not fewer lines.
+The point is fewer unnecessary decisions.
 
 ## The Team
 
-### The Clipper
+**The Clipper** cuts unnecessary code.
+Minimal-code senior engineer. Ponytail/Greybeard-inspired, but safer.
+Smallest safe change wins.
 
-Minimal-code senior engineer. The Clipper prefers existing code, native platform features, standard libraries, and small patches before new dependencies or rewrites.
+**Ground Control** drags architecture back to earth.
+Anti-Architecture-Astronaut product architect.
+Every abstraction must pay rent.
 
-Core belief: **Shortest is not enough. Smallest safe change wins.**
+**Rubber Duck** exposes broken assumptions.
+Debugging coach.
+Do not fix what you have not reproduced.
 
-### Ground Control
+**Yak Shaver** kills scope creep.
+Scope cutter.
+If it does not unblock the goal, defer it.
 
-Anti-Architecture-Astronaut product architect. Ground Control keeps design decisions tied to the actual product problem and deletes abstractions that do not pay rent.
+## How It Works
 
-Core belief: **Every abstraction must pay rent.**
+Before writing code, Gooblin forces the agent through:
 
-### Rubber Duck
+1. What is the actual product goal?
+2. What is the expected behavior?
+3. What is the smallest safe change?
+4. Does existing code already solve it?
+5. Can native platform or stdlib solve it?
+6. Is this abstraction paying rent?
+7. Has the bug been reproduced?
+8. What scope can be deferred?
+9. What verifies the change?
 
-Debugging coach and contradiction finder. Rubber Duck separates expected behavior from actual behavior, finds the first contradiction, and builds a minimal reproduction before proposing fixes.
+Gooblin is lazy about unnecessary work, not lazy about understanding the problem.
 
-Core belief: **Do not fix what you have not reproduced.**
+Never cut:
 
-### Yak Shaver
-
-Scope cutter, delivery PM, and fake-productivity detector. Yak Shaver protects the current goal by separating required work from optional rabbit holes.
-
-Core belief: **If it does not unblock the goal, defer it.**
-
-## How The Council Works
-
-Use full council mode when a task has unclear scope, risky architecture, debugging ambiguity, or a high chance of unnecessary work.
-
-The council checks a task from four angles:
-
-1. **The Clipper:** What can be cut, reused, or solved with native options?
-2. **Ground Control:** What is the actual product problem and smallest architecture that works?
-3. **Rubber Duck:** What is expected, what is actual, and what must be reproduced?
-4. **Yak Shaver:** What unblocks the goal now, and what should be deferred?
-
-The final verdict should say what to do, what not to do, and how to verify it.
+- auth/authz
+- validation
+- secrets handling
+- data-loss protection
+- rollback paths
+- accessibility basics
+- user-stated constraints
 
 ## Install
 
 Gooblin is designed to be installed like a plugin-style Agent Skills pack.
-
-These install paths are intended for compatible agents and plugin systems. They should be treated as expected distribution shapes until verified in each agent marketplace or installer.
-
-Plugin support may vary by agent. If plugin installation is not available, Gooblin still works as a readable skill pack. Hooks are optional and only used for activation/context injection.
 
 ### Claude Code
 
@@ -80,6 +110,8 @@ Plugin support may vary by agent. If plugin installation is not available, Goobl
 /plugin marketplace add jsleemaster/gooblin
 /plugin install gooblin@gooblin
 ```
+
+You may need to send those as two separate prompts.
 
 ### Codex
 
@@ -89,8 +121,6 @@ codex
 ```
 
 Then open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
-
-The repository includes `.codex-plugin/plugin.json`, `plugin.yaml`, `skills/`, `commands/`, and optional reminder-only hooks.
 
 ### Manual fallback
 
@@ -106,115 +136,96 @@ Then ask your coding agent:
 Use Gooblin council mode for this task.
 ```
 
-## Usage Examples
+Plugin support may vary by agent.
+If plugin installation is not available, Gooblin still works as a readable skill pack.
 
-Full council review:
+Hooks are optional.
+They only inject Gooblin context and should never mutate user files automatically.
 
-```text
-Use Gooblin council mode for this task. Find the smallest safe shippable change and verify it.
-```
+## Commands
 
-Focused minimal-code review:
+| Command | What it does |
+| --- | --- |
+| `/gooblin` | Full council review using all four teammates. |
+| `/clip` | The Clipper only: cuts code, dependencies, rewrites, and unnecessary abstractions. |
+| `/ground` | Ground Control only: reviews architecture and product fit. |
+| `/duck` | Rubber Duck only: debugging, reproduction, contradiction finding. |
+| `/yak` | Yak Shaver only: scope control and next shippable move. |
+| `/shipcheck` | Final pre-ship review before calling work done. |
 
-```text
-Use The Clipper. This patch adds a dependency and a new abstraction. Tell me what can be reused or cut.
-```
+In some agents, commands may be exposed as skills instead of slash commands.
 
-Debugging review:
+## Examples
 
-```text
-Use Rubber Duck. The login flow sometimes fails, but we do not have a reproduction yet.
-```
+- [Overbuilt date picker](examples/overbuilt-date-picker/)
+- [Architecture astronauting](examples/architecture-astronauting/)
+- [Debugging without reproduction](examples/debugging-without-repro/)
+- [Yak-shaving an MVP](examples/yak-shaving-mvp/)
 
-Pre-ship check:
+These examples are not benchmarks.
 
-```text
-Run shipcheck on this diff. Identify unnecessary code, speculative architecture, missing repro, optional scope, and verification gaps.
-```
+## Numbers
 
-## Project Structure
+No benchmark claims yet.
 
-```text
-AGENTS.md                    Repo-level agent instructions
-LICENSE                      MIT license
-package.json                 Minimal plugin distribution metadata
-plugin.yaml                  Lightweight plugin metadata
-.claude-plugin/plugin.json   Claude-style plugin manifest
-.codex-plugin/plugin.json    Codex-style plugin manifest
-.cursor/rules/gooblin.mdc    Cursor-style fallback rules
-hooks/                       Reminder-only lifecycle hooks
-skills/                      Gooblin skill definitions
-commands/                    Command docs and invocation shapes
-examples/                    Prompt and expected-output examples
-evals/rubric.md              Practical output rubric
-docs/                        Install, distribution, brand, and roadmap notes
-assets/README.md             Placeholder instructions for future logo asset
-```
+Gooblin will not claim "less code," "faster," "cheaper," or "safer" until measured on real agentic coding sessions.
 
-## Non-Goals
+Planned measurements:
 
-Gooblin will not be:
+- diff size
+- dependency additions avoided
+- tests added
+- scope reduced
+- verification quality
+- safety regressions
 
-- A long-running agent runtime.
-- A cloud agent or VPS agent.
-- A messaging bot or gateway.
-- A dependency-heavy CLI.
-- A framework, app scaffold, or npm library.
-- An automatic self-modifying skill system.
-- A benchmark claim generator.
-- A marketplace approval claim.
+If benchmarks are added later, include:
 
-## Roadmap
+- method
+- repo/task set
+- model/agent version
+- sample size
+- limitations
+- reproduction instructions
 
-### v0.1
+## Development
 
-- Open-source plugin-style repo.
-- MIT license.
-- README.
-- AGENTS.md.
-- Skills.
-- Commands.
-- Plugin manifests.
-- Minimal hooks.
-- Install docs.
-- Examples.
-- Eval rubric.
+This repo should stay boring.
 
-### v0.2
+When changing Gooblin:
 
-- Verify Claude Code plugin install.
-- Verify Codex plugin install.
-- Add logo asset.
-- Add screenshots or demo GIF if available.
-- Add more examples.
+- keep skills readable as plain Markdown
+- keep hooks tiny and dependency-free
+- keep plugin manifests aligned
+- update examples when behavior changes
+- do not add runtime scaffolding unless explicitly needed
+- do not add fake automation
 
-### v0.3
+`package.json` exists only as minimal open-source plugin metadata. Do not add app dependencies, build tooling, or runtime scaffolding.
 
-- Add optional adapters for more agents.
-- Add safer hook modes.
-- Add eval fixtures.
+## FAQ
 
-### v1.0
+**Q: Is Gooblin an agent runtime?**
 
-- Stable plugin-style Agent Skills pack.
-- Verified install paths.
-- Real examples.
-- No fake benchmarks.
+A: No. It is a plugin-style Agent Skills pack.
 
-## Contributing
+**Q: Does it write code for me?**
 
-Contributions are welcome when they keep Gooblin practical and lean.
+A: Your coding agent writes code. Gooblin makes it harder for the agent to overbuild, guess, or drift.
 
-Good contributions usually improve one of these:
+**Q: Are the four teammates actual subagents?**
 
-- Clearer skill instructions.
-- Better examples.
-- Better eval criteria.
-- Safer plugin distribution docs.
-- Adapter compatibility notes that have been verified.
+A: Not by default. They are skills and review modes. Future adapters may map them to subagents where supported.
 
-Please do not add runtime scaffolding, dependencies, generated code, fake metrics, or broad rewrites without a concrete reason.
+**Q: Does Gooblin need hooks?**
+
+A: No. Hooks improve activation in compatible agents. The skills still work as plain Markdown.
+
+**Q: Why "Gooblin"?**
+
+A: Because your agent needed adult supervision and got a goblin with scissors.
 
 ## License
 
-MIT
+MIT.
+Small enough to ship.

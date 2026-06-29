@@ -18,7 +18,7 @@
 
 - Verify Claude Code plugin install.
 - Verify Codex plugin install.
-- Add logo asset.
+- Refine logo asset if needed.
 - Add screenshots or demo GIF if available.
 - Add more examples.
 

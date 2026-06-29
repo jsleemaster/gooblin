@@ -39,6 +39,14 @@ Black-only rough MS Paint-like doodle art on a white background.
 
 The style should feel weird, practical, senior, cynical, and shippable. It should not feel polished into a generic SaaS mascot.
 
+## README Tone Rule
+
+Follow Ponytail's README rhythm: punchy, practical, slightly funny, but grounded.
+Do not copy its wording.
+Do not copy its benchmark claims.
+Do not copy its exact jokes.
+Gooblin should feel like a sibling in format, not a fork in personality.
+
 ## Avoid
 
 - Cute productivity app.
@@ -50,4 +58,4 @@ The style should feel weird, practical, senior, cynical, and shippable. It shoul
 
 ## Logo Asset
 
-No logo asset is included in v0.1. When a logo is ready, add it as `assets/logo.png` and update manifests only if the path changes.
+The v0.1 logo is included at `assets/logo.png`. Update manifests only if the path changes.
