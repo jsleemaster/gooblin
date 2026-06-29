@@ -32,9 +32,9 @@
 ## v1.0
 
 - Stable plugin-style Agent Skills pack.
-- Verified installation paths.
-- Real examples.
-- No fake benchmarks.
+- Verified install path documentation.
+- Real examples and eval fixtures.
+- Explicit claims policy with no fake benchmarks.
 
 ## Non-Goals
 

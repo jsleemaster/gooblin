@@ -64,6 +64,8 @@ Keep skills readable as plain Markdown:
 
 ## Claims Policy
 
+See `docs/claims-policy.md` for the full policy.
+
 Do not claim:
 
 - Marketplace approval.
