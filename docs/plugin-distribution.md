@@ -24,7 +24,7 @@ The repository shape uses a public plugin-style distribution model: agent-readab
 - `.codex-plugin/`: Codex-style plugin manifest.
 - `.cursor/rules/`: Cursor-style fallback rules.
 - `plugins/gooblin/`: thin marketplace adapter with symlinks back to the root skill pack.
-- `adapters/`: optional host recipes for agents without the same plugin marketplace shape.
+- `adapters/`: optional host recipes for agents without the same plugin marketplace shape, including Codex, Claude Code, Gemini CLI, OpenCode, Devin, Hermes Agent, Cursor, Continue-style context, and generic agents.
 - `plugin.yaml`: lightweight metadata for simple plugin loaders.
 - `package.json`: open-source distribution metadata only.
 
