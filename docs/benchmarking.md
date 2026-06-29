@@ -28,6 +28,14 @@ The goal is to measure whether Gooblin changes the shape of the answer: less unn
 7. Record setup details: model, agent version, repo/context, date, budget, and any deviations.
 8. Record limitations before drawing conclusions.
 
+## Collection Method
+
+Prefer CLI transcripts for Gooblin evaluations.
+
+Gooblin is a plugin-style Agent Skills pack, not a browser application. CLI runs make it easier to capture the prompt, command, agent version, model, repository state, stdout, stderr, and raw answer for both baseline and treatment runs.
+
+Use browser automation only when the task itself is browser-bound, such as verifying a web UI behavior. Do not use Playwright or browser MCP logs as the default benchmark collection path for general Gooblin skill evaluations.
+
 ## Output Storage
 
 Use `evals/runs/` for local notes and raw outputs.

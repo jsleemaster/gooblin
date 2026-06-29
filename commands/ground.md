@@ -12,6 +12,10 @@ Advanced direct-call shortcut for Ground Control. Most users should start with `
 
 Use this when a design may be drifting into speculative architecture or future-scale complexity.
 
+## Language
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, and error text unchanged unless translation is requested.
+
 ## Output Shape
 
 ```markdown

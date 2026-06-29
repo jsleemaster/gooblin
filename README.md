@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 1.1.1" src="https://img.shields.io/badge/version-1.1.1-111111">
+  <img alt="version 1.1.2" src="https://img.shields.io/badge/version-1.1.2-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -185,7 +185,7 @@ Planned measurements:
 
 If benchmarks are added later, include method, repo/task set, model/agent version, sample size, limitations, and reproduction instructions.
 
-Eval fixtures live in [evals/fixtures](evals/fixtures/). They are behavior checks, not benchmarks.
+Evaluation guidance lives in [benchmarking](docs/benchmarking.md). Eval fixtures live in [evals/fixtures](evals/fixtures/). They are behavior checks, not benchmarks.
 
 ## Development
 
@@ -217,6 +217,10 @@ A: Not by default. They are skills and review modes. Future adapters may map the
 **Q: Does Gooblin need hooks?**
 
 A: No. Hooks improve activation in compatible agents. The skills still work as plain Markdown.
+
+**Q: Does Gooblin only work in English?**
+
+A: No. Gooblin should answer in the user's language by default while keeping code, commands, paths, API names, and error text intact.
 
 **Q: Why "Gooblin"?**
 

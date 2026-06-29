@@ -11,22 +11,22 @@ Checked on 2026-06-29 from `/Users/smlee/Gooblin`.
 | Claude Code | `2.1.96` | `claude plugin marketplace add /Users/smlee/Gooblin`, `claude plugin install gooblin@gooblin --scope user`, `claude plugin list`. |
 | Codex CLI | `0.141.0` | `codex plugin marketplace add /Users/smlee/Gooblin --json`, `codex plugin add gooblin@gooblin --json`, `codex plugin list`. |
 
-Expected local result for v1.1.1:
+Expected local result for v1.1.2:
 
-- Claude Code: `gooblin@gooblin`, version `1.1.1`, status `enabled`.
-- Codex CLI: `gooblin@gooblin`, version `1.1.1`, status `installed, enabled`.
+- Claude Code: `gooblin@gooblin`, version `1.1.2`, status `enabled`.
+- Codex CLI: `gooblin@gooblin`, version `1.1.2`, status `installed, enabled`.
 
 ## Verified From Git Branch
 
 Codex CLI was also checked against the remote release branch before merge:
 
 ```bash
-codex plugin marketplace add jsleemaster/gooblin --ref release/v1.1.1
+codex plugin marketplace add jsleemaster/gooblin --ref release/v1.1.2
 codex plugin add gooblin@gooblin
 codex plugin list
 ```
 
-Result: `gooblin@gooblin`, version `1.1.1`, status `installed, enabled`.
+Result: `gooblin@gooblin`, version `1.1.2`, status `installed, enabled`.
 
 Claude Code's marketplace add command in the checked version did not expose a `--ref` option, so Claude remote verification should be repeated after the release is published on `main`.
 

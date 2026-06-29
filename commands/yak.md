@@ -12,6 +12,10 @@ Advanced direct-call shortcut for Yak Shaver. Most users should start with `/goo
 
 Use this when the work is drifting into optional setup, polish, refactors, redesigns, or research that may not unblock the current goal.
 
+## Language
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, and error text unchanged unless translation is requested.
+
 ## Output Shape
 
 ```markdown

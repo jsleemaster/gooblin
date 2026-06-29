@@ -12,6 +12,10 @@ Advanced direct-call shortcut for Rubber Duck. Most users should start with `/go
 
 Use this when a bug lacks clear expected behavior, actual behavior, reproduction, logs, or first failing boundary.
 
+## Language
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, and error text unchanged unless translation is requested.
+
 ## Output Shape
 
 ```markdown

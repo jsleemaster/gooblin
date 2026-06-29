@@ -12,6 +12,10 @@ Run the Gooblin Router. Users should not need to know which teammate to call.
 
 Use this as the default Gooblin command for implementation plans, bugs, architecture questions, scope decisions, and pre-ship review.
 
+## Language
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, and error text unchanged unless translation is requested.
+
 ## Routing
 
 | Task type | Route |
