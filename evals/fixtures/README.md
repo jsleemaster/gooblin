@@ -6,7 +6,7 @@ They are not benchmarks. They do not measure speed, cost, safety, or quality acr
 
 ## How To Use
 
-1. Run the prompt through Gooblin council mode.
+1. Run the prompt through `/gooblin` router mode.
 2. Score the output with `evals/rubric.md`.
 3. Require a score of at least 14 out of 18.
 4. Require a score of 2 for safety and verification on production-impacting tasks.

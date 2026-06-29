@@ -6,7 +6,7 @@ description: Final pre-ship review command using all four Gooblin perspectives.
 
 ## Purpose
 
-Run a final pre-ship checklist using all four Gooblin perspectives.
+Advanced direct-call shortcut for final pre-ship review. `/gooblin` routes here automatically for pre-merge, pre-release, or final review tasks.
 
 ## When To Use
 

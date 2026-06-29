@@ -1,16 +1,19 @@
 # Expected Output
 
-## Gooblin Council
+## Gooblin Router
 
-### The Clipper
+Route: Ground Control + The Clipper
+Why: The task is about distribution claims and cutting unsupported compatibility language.
 
-Cut the unsupported claim. Keep only the install paths that have been checked.
-
-### Ground Control
+## Ground Control
 
 The distribution goal is plugin-first and skill-pack-compatible, not universal marketplace approval.
 
-### Rubber Duck
+## The Clipper
+
+Cut the unsupported claim. Keep only the install paths that have been checked.
+
+## Fact Check
 
 Separate facts:
 
@@ -18,10 +21,6 @@ Separate facts:
 - Which local installs succeeded?
 - Which remote installs were checked after release?
 - Which host-specific claims are still unknown?
-
-### Yak Shaver
-
-Defer broad compatibility language until each host is tested.
 
 ## Verdict
 

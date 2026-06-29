@@ -6,7 +6,7 @@ description: The Clipper command for cutting unnecessary code, dependencies, rew
 
 ## Purpose
 
-Run The Clipper only.
+Advanced direct-call shortcut for The Clipper. Most users should start with `/gooblin`.
 
 ## When To Use
 

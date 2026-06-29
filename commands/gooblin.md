@@ -1,26 +1,41 @@
 ---
-description: Full Gooblin council command combining The Clipper, Ground Control, Rubber Duck, and Yak Shaver.
+description: Primary Gooblin router command. Diagnose the task type first, then route to the smallest useful teammate set.
 ---
 
 # /gooblin
 
 ## Purpose
 
-Run full Gooblin council review with The Clipper, Ground Control, Rubber Duck, and Yak Shaver.
+Run the Gooblin Router. Users should not need to know which teammate to call.
 
 ## When To Use
 
-Use this when a task needs combined review for minimal code, grounded architecture, debugging discipline, scope control, and verification.
+Use this as the default Gooblin command for implementation plans, bugs, architecture questions, scope decisions, and pre-ship review.
+
+## Routing
+
+| Task type | Route |
+| --- | --- |
+| Code bloat, unnecessary dependencies, rewrites, smallest safe implementation | The Clipper |
+| Architecture, module boundaries, abstractions, scalability, system design | Ground Control |
+| Bug, failing test, unexpected behavior, unclear cause, reproduction | Rubber Duck |
+| MVP, scope, deadline, task breakdown, roadmap, rabbit holes | Yak Shaver |
+| Pre-merge, pre-release, final review | Shipcheck |
+| Ambiguous or high-risk | Full Gooblin Council |
+
+Direct commands like `/clip`, `/ground`, `/duck`, and `/yak` are advanced shortcuts.
 
 ## Output Shape
 
 ```markdown
-## Gooblin Council
+## Gooblin Router
 
-### The Clipper
-### Ground Control
-### Rubber Duck
-### Yak Shaver
+Route:
+Why:
+
+## Selected teammate or Shipcheck
+
+...
 
 ## Verdict
 
