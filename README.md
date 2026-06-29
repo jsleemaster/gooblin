@@ -131,7 +131,7 @@ Plugin support may vary by agent. If plugin installation is not available, Goobl
 Hooks are optional. They only inject Gooblin context and should never mutate user files automatically.
 
 See [install docs](docs/install.md) and [compatibility notes](docs/compatibility.md) for currently verified local installer behavior.
-Optional host recipes live in [adapters](adapters/).
+Optional host recipes for Codex, Claude Code, Gemini CLI, OpenCode, Devin, Hermes Agent, Cursor, Continue-style context, and generic agents live in [adapters](adapters/).
 Stable surfaces and claim rules are documented in [stability](docs/stability.md), [verified install paths](docs/verified-install-paths.md), and [claims policy](docs/claims-policy.md).
 
 ## Commands
