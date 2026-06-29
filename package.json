@@ -1,0 +1,37 @@
+{
+  "name": "gooblin",
+  "version": "0.1.0",
+  "description": "A geeky product-engineering team for AI coding agents.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsleemaster/gooblin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jsleemaster/gooblin/issues"
+  },
+  "homepage": "https://github.com/jsleemaster/gooblin#readme",
+  "keywords": [
+    "ai-agents",
+    "coding-agents",
+    "agent-skills",
+    "code-review",
+    "debugging",
+    "product-engineering",
+    "scope-control"
+  ],
+  "files": [
+    "AGENTS.md",
+    "skills/",
+    "commands/",
+    "hooks/",
+    "docs/",
+    "assets/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    ".cursor/",
+    "plugin.yaml",
+    "LICENSE",
+    "README.md"
+  ]
+}

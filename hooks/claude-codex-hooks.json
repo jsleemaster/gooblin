@@ -1,0 +1,23 @@
+{
+  "name": "gooblin-hooks",
+  "version": "0.1.0",
+  "description": "Reminder-only lifecycle hooks for Gooblin mode.",
+  "hooks": {
+    "session_start": [
+      {
+        "command": "node ./hooks/gooblin-activate.js"
+      }
+    ],
+    "user_prompt_submit": [
+      {
+        "command": "node ./hooks/gooblin-mode-tracker.js"
+      }
+    ]
+  },
+  "safety": {
+    "network": false,
+    "telemetry": false,
+    "mutates_user_files": false,
+    "dangerous_commands": false
+  }
+}

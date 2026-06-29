@@ -1,0 +1,7 @@
+{
+  "name": "gooblin",
+  "version": "0.1.0",
+  "description": "A geeky product-engineering team for AI coding agents.",
+  "author": "jsleemaster",
+  "hooks": "./hooks/claude-codex-hooks.json"
+}

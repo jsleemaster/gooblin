@@ -1,0 +1,23 @@
+name: gooblin
+version: 0.1.0
+description: A geeky product-engineering team for AI coding agents.
+author: jsleemaster
+license: MIT
+homepage: https://github.com/jsleemaster/gooblin
+repository: https://github.com/jsleemaster/gooblin
+provides_hooks:
+  - session_start
+  - user_prompt_submit
+provides_commands:
+  - gooblin
+  - clip
+  - ground
+  - duck
+  - yak
+  - shipcheck
+provides_skills:
+  - gooblin
+  - clipper
+  - ground-control
+  - rubber-duck
+  - yak-shaver

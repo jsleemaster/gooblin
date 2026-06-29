@@ -1,0 +1,40 @@
+{
+  "name": "gooblin",
+  "version": "0.1.0",
+  "description": "A geeky product-engineering team for AI coding agents.",
+  "author": "jsleemaster",
+  "homepage": "https://github.com/jsleemaster/gooblin",
+  "repository": "https://github.com/jsleemaster/gooblin",
+  "license": "MIT",
+  "keywords": [
+    "ai-agents",
+    "coding-agents",
+    "agent-skills",
+    "code-review",
+    "debugging",
+    "product-engineering",
+    "scope-control"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/claude-codex-hooks.json",
+  "interface": {
+    "displayName": "Gooblin",
+    "shortDescription": "Geeky product-engineering team for AI agents",
+    "longDescription": "Gooblin gives your coding agent four practical teammates: The Clipper, Ground Control, Rubber Duck, and Yak Shaver.",
+    "developerName": "jsleemaster",
+    "category": "Productivity",
+    "capabilities": [
+      "Instructions",
+      "Skills",
+      "Lifecycle hooks"
+    ],
+    "websiteURL": "https://github.com/jsleemaster/gooblin",
+    "defaultPrompt": [
+      "Use Gooblin council mode for this task.",
+      "Review this diff with Gooblin.",
+      "Find the smallest safe shippable change."
+    ],
+    "brandColor": "#111111",
+    "logo": "./assets/logo.png"
+  }
+}

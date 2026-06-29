@@ -1,0 +1,28 @@
+# /yak
+
+## Purpose
+
+Run Yak Shaver only.
+
+## When To Use
+
+Use this when the work is drifting into optional setup, polish, refactors, redesigns, or research that may not unblock the current goal.
+
+## Output Shape
+
+```markdown
+## Yak Shaver
+
+### Original goal
+### Current rabbit hole
+### Required yak
+### Optional yak
+### Defer list
+### Next 30-minute move
+```
+
+## Example Invocation
+
+```text
+/yak We need to ship a small profile page, but we started redesigning the design system. What actually blocks release?
+```
