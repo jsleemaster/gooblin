@@ -46,7 +46,7 @@ The v0.2.0 release verified local install behavior with:
 - Claude Code `2.1.96`.
 - Codex CLI `0.141.0`.
 
-See [compatibility notes](compatibility.md) for the exact commands and results.
+See [compatibility notes](compatibility.md) and [verified install paths](verified-install-paths.md) for the exact commands and results.
 
 ## Manual Installation
 

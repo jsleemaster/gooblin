@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 0.3.0" src="https://img.shields.io/badge/version-0.3.0-111111">
+  <img alt="version 1.0.0" src="https://img.shields.io/badge/version-1.0.0-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -118,6 +118,7 @@ Hooks are optional. They only inject Gooblin context and should never mutate use
 
 See [install docs](docs/install.md) and [compatibility notes](docs/compatibility.md) for currently verified local installer behavior.
 Optional host recipes live in [adapters](adapters/).
+Stable surfaces and claim rules are documented in [stability](docs/stability.md), [verified install paths](docs/verified-install-paths.md), and [claims policy](docs/claims-policy.md).
 
 ## Commands
 
@@ -142,6 +143,8 @@ In some agents, commands may be exposed as skills instead of slash commands.
 | [Yak-shaving an MVP](examples/yak-shaving-mvp/) | Redesigning the system before shipping the page. |
 | [Unsafe auth shortcut](examples/unsafe-auth-shortcut/) | Over-cutting past the safety floor. |
 | [Plugin install verification](examples/plugin-install-verification/) | Separating verified install facts from assumptions. |
+| [Release train governance](examples/release-train-governance/) | Shipping fast without pretending review happened. |
+| [Claims policy review](examples/claims-policy-review/) | Cutting unsupported safety, speed, and compatibility claims. |
 
 These examples are not benchmarks.
 
