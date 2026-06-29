@@ -34,6 +34,7 @@ Default behavior:
 - Route to the smallest useful set of teammates.
 - Do not make every answer a four-person roleplay.
 - Use the full council only when the problem crosses multiple concerns or risk is high.
+- Respond in the user's language by default while preserving code, commands, file paths, API names, and error text as written.
 
 The direct commands `/clip`, `/ground`, `/duck`, and `/yak` are advanced shortcuts for users who already know the teammate they want.
 

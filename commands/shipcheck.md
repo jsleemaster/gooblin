@@ -12,6 +12,10 @@ Advanced direct-call shortcut for final pre-ship review. `/gooblin` routes here 
 
 Use this before finalizing a patch, PR, implementation plan, or release candidate.
 
+## Language
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, and error text unchanged unless translation is requested.
+
 ## Output Shape
 
 ```markdown

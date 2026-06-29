@@ -12,6 +12,10 @@ Advanced direct-call shortcut for The Clipper. Most users should start with `/go
 
 Use this when a change may be too large, dependency-heavy, rewrite-heavy, or abstraction-heavy.
 
+## Language
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, and error text unchanged unless translation is requested.
+
 ## Output Shape
 
 ```markdown

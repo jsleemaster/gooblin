@@ -31,6 +31,12 @@ Use Gooblin Core when an agent needs practical engineering discipline for planni
 5. Provide verification.
 6. Record reusable lessons only through the learning ledger template.
 
+## Language Discipline
+
+Respond in the user's language by default. Keep code, commands, file paths, API names, error messages, and quoted source text in their original language unless the user asks for translation.
+
+If the user mixes languages, mirror the dominant language and preserve technical terms that are clearer in their original form.
+
 ## Safety Floor
 
 Read `safety-floor.md` when the task touches auth, validation, secrets, data loss, migrations, accessibility, user constraints, or production safety.
