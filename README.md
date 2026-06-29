@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-111111">
+  <img alt="version 0.3.0" src="https://img.shields.io/badge/version-0.3.0-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -117,6 +117,7 @@ Plugin support may vary by agent. If plugin installation is not available, Goobl
 Hooks are optional. They only inject Gooblin context and should never mutate user files automatically.
 
 See [install docs](docs/install.md) and [compatibility notes](docs/compatibility.md) for currently verified local installer behavior.
+Optional host recipes live in [adapters](adapters/).
 
 ## Commands
 
@@ -162,6 +163,8 @@ Planned measurements:
 | safety regressions | Makes sure cutting did not cut the floor. |
 
 If benchmarks are added later, include method, repo/task set, model/agent version, sample size, limitations, and reproduction instructions.
+
+Eval fixtures live in [evals/fixtures](evals/fixtures/). They are behavior checks, not benchmarks.
 
 ## Development
 

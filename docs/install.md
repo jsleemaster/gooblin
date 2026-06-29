@@ -123,6 +123,17 @@ To disable Gooblin hooks when the host agent passes environment variables throug
 GOOBLIN_DISABLE=1
 ```
 
+You can also choose a hook mode:
+
+```bash
+GOOBLIN_HOOK_MODE=quiet
+GOOBLIN_HOOK_MODE=brief
+GOOBLIN_HOOK_MODE=verbose
+GOOBLIN_HOOK_MODE=off
+```
+
+`brief` is the default. `quiet` and `off` produce no output. `verbose` adds extra safety-floor reminders.
+
 If your agent asks whether to trust hooks, you can decline and still use Gooblin manually through `AGENTS.md`, `skills/`, and `commands/`.
 
 ## Troubleshooting
