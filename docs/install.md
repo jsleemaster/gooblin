@@ -21,19 +21,32 @@ Use this path for agents that support plugin marketplaces, plugin manifests, or 
 
 ```bash
 codex plugin marketplace add jsleemaster/gooblin
+codex plugin add gooblin@gooblin
 codex
 ```
 
-Then open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
+You can also open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
 
 The repository includes:
 
 - `.codex-plugin/plugin.json`
+- `.agents/plugins/marketplace.json`
 - `.claude-plugin/plugin.json`
+- `.claude-plugin/marketplace.json`
 - `plugin.yaml`
+- `plugins/gooblin`
 - `skills/`
 - `commands/`
 - `hooks/`
+
+## Verified Local Installer Path
+
+The v0.2.0 release verified local install behavior with:
+
+- Claude Code `2.1.96`.
+- Codex CLI `0.141.0`.
+
+See [compatibility notes](compatibility.md) for the exact commands and results.
 
 ## Manual Installation
 

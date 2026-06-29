@@ -19,9 +19,11 @@ The repository shape is inspired by Ponytail-style plugin distribution, but Goob
 - `skills/`: skill definitions.
 - `commands/`: command docs and prompt shapes.
 - `hooks/`: safe lifecycle reminders.
-- `.claude-plugin/`: Claude-style manifest.
-- `.codex-plugin/`: Codex-style manifest.
+- `.agents/plugins/marketplace.json`: Codex marketplace manifest that exposes the repo root as the `gooblin` plugin.
+- `.claude-plugin/`: Claude-style marketplace and plugin manifests.
+- `.codex-plugin/`: Codex-style plugin manifest.
 - `.cursor/rules/`: Cursor-style fallback rules.
+- `plugins/gooblin/`: thin marketplace adapter with symlinks back to the root skill pack.
 - `plugin.yaml`: lightweight metadata for simple plugin loaders.
 - `package.json`: open-source distribution metadata only.
 

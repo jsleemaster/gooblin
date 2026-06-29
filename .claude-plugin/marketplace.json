@@ -1,0 +1,18 @@
+{
+  "name": "gooblin",
+  "owner": {
+    "name": "jsleemaster"
+  },
+  "plugins": [
+    {
+      "name": "gooblin",
+      "description": "A geeky product-engineering team for AI coding agents.",
+      "author": {
+        "name": "jsleemaster"
+      },
+      "category": "development",
+      "source": "./plugins/gooblin",
+      "homepage": "https://github.com/jsleemaster/gooblin"
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+---
+description: Final pre-ship review command using all four Gooblin perspectives.
+---
+
 # /shipcheck
 
 ## Purpose

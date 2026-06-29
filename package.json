@@ -1,6 +1,6 @@
 {
   "name": "gooblin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A geeky product-engineering team for AI coding agents.",
   "license": "MIT",
   "repository": {
@@ -27,9 +27,11 @@
     "hooks/",
     "docs/",
     "assets/",
+    ".agents/",
     ".claude-plugin/",
     ".codex-plugin/",
     ".cursor/",
+    "plugins/",
     "plugin.yaml",
     "LICENSE",
     "README.md"

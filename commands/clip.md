@@ -1,3 +1,7 @@
+---
+description: The Clipper command for cutting unnecessary code, dependencies, rewrites, and abstractions while preserving safety.
+---
+
 # /clip
 
 ## Purpose

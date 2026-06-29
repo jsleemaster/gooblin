@@ -1,3 +1,7 @@
+---
+description: Yak Shaver command for cutting optional scope and identifying the next shippable move.
+---
+
 # /yak
 
 ## Purpose

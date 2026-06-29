@@ -1,3 +1,7 @@
+---
+description: Rubber Duck command for debugging through expected behavior, actual behavior, reproduction, and contradictions.
+---
+
 # /duck
 
 ## Purpose
