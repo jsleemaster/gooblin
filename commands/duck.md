@@ -6,7 +6,7 @@ description: Rubber Duck command for debugging through expected behavior, actual
 
 ## Purpose
 
-Run Rubber Duck only.
+Advanced direct-call shortcut for Rubber Duck. Most users should start with `/gooblin`.
 
 ## When To Use
 

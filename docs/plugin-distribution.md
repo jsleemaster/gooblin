@@ -2,7 +2,7 @@
 
 Gooblin is distributed as an open-source plugin-style Agent Skills repository. It is plugin-first and skill-pack-compatible.
 
-The repository shape is inspired by Ponytail-style plugin distribution, but Gooblin does not copy Ponytail content. It uses the idea of a public repo that contains agent-readable instructions, skills, commands, hooks, plugin manifests, and adapter folders.
+The repository shape uses a public plugin-style distribution model: agent-readable instructions, skills, commands, hooks, plugin manifests, and adapter folders.
 
 ## Distribution Goals
 

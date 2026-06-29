@@ -6,7 +6,7 @@ description: Yak Shaver command for cutting optional scope and identifying the n
 
 ## Purpose
 
-Run Yak Shaver only.
+Advanced direct-call shortcut for Yak Shaver. Most users should start with `/gooblin`.
 
 ## When To Use
 

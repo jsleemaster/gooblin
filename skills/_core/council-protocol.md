@@ -1,13 +1,15 @@
 # Council Protocol
 
-Use council mode when a task benefits from all four Gooblin perspectives.
+Use `/gooblin` as a router first. Use full council mode only when a task benefits from all four Gooblin perspectives or the work is ambiguous or high-risk.
 
 ## Flow
 
 1. Start from the user goal.
-2. Ask each teammate for the smallest useful contribution.
-3. Resolve conflicts with the council rules.
-4. Produce a verdict with action, non-action, and verification.
+2. Diagnose the task type.
+3. Route to the smallest useful teammate set.
+4. Use Shipcheck for pre-merge, pre-release, or final review.
+5. Use full council only for cross-cutting or high-risk work.
+6. Produce a verdict with action, non-action, and verification.
 
 ## Conflict Resolution
 
@@ -20,18 +22,12 @@ Use council mode when a task benefits from all four Gooblin perspectives.
 ## Output Template
 
 ```markdown
-## Gooblin Council
+## Gooblin Router
 
-### The Clipper
-...
+Route:
+Why:
 
-### Ground Control
-...
-
-### Rubber Duck
-...
-
-### Yak Shaver
+## Selected teammate, Shipcheck, or Gooblin Council
 ...
 
 ## Verdict

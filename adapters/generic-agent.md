@@ -14,7 +14,7 @@ Reference these files or folders in the agent context:
 Then prompt:
 
 ```text
-Use Gooblin council mode for this task.
+Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
 
 ## Expected Behavior
@@ -22,6 +22,7 @@ Use Gooblin council mode for this task.
 The agent should preserve the Gooblin kernel:
 
 - Spec first.
+- Route before roleplay.
 - Smallest safe change.
 - Reproduce before fixing.
 - Defer optional scope.

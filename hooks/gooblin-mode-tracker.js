@@ -14,7 +14,7 @@ try {
   ];
 
   if (mode === 'verbose') {
-    lines.push('Use /clip, /ground, /duck, /yak, or /shipcheck when full council mode is unnecessary.');
+    lines.push('Start with /gooblin unless you already know the direct shortcut: /clip, /ground, /duck, /yak, or /shipcheck.');
   }
 
   process.stdout.write(lines.join('\n') + '\n');

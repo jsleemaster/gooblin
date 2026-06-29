@@ -6,7 +6,7 @@ description: Ground Control command for keeping architecture grounded in the act
 
 ## Purpose
 
-Run Ground Control only.
+Advanced direct-call shortcut for Ground Control. Most users should start with `/gooblin`.
 
 ## When To Use
 

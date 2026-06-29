@@ -65,14 +65,14 @@ Copy or reference:
 Then ask your coding agent:
 
 ```text
-Use Gooblin council mode for this task.
+Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
 
 For Cursor-style rule import, use `.cursor/rules/gooblin.mdc`.
 
 ## Activate `/gooblin`
 
-Use `/gooblin` when you want all four teammates to review the task together.
+Use `/gooblin` as the primary interface. It diagnoses the task first, then routes to the smallest useful teammate set.
 
 ```text
 /gooblin Review this plan and find the smallest safe shippable path.
@@ -81,12 +81,12 @@ Use `/gooblin` when you want all four teammates to review the task together.
 Expected shape:
 
 ```markdown
-## Gooblin Council
+## Gooblin Router
 
-### The Clipper
-### Ground Control
-### Rubber Duck
-### Yak Shaver
+Route:
+Why:
+
+## Selected teammate or Shipcheck
 
 ## Verdict
 
@@ -98,12 +98,12 @@ Verify with:
 If the agent does not support slash commands, paste the equivalent request:
 
 ```text
-Use Gooblin council mode for this task.
+Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
 
 ## Use Individual Skills
 
-Use focused skills when you do not need full council mode:
+Use focused skills as advanced direct-call shortcuts when you already know which teammate you need:
 
 - `/clip`: cut unnecessary code, dependencies, rewrites, and abstractions.
 - `/ground`: keep architecture grounded in the actual product problem.

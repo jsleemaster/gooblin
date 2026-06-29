@@ -41,7 +41,7 @@ The style should feel weird, practical, senior, cynical, and shippable. It shoul
 
 ## README Tone Rule
 
-Follow Ponytail's README rhythm: punchy, practical, slightly funny, but grounded.
+Follow a punchy open-source README rhythm: practical, slightly funny, but grounded.
 Do not copy its wording.
 Do not copy its benchmark claims.
 Do not copy its exact jokes.

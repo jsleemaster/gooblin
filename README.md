@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 1.0.0" src="https://img.shields.io/badge/version-1.0.0-111111">
+  <img alt="version 1.1.0" src="https://img.shields.io/badge/version-1.1.0-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -26,25 +26,21 @@ It installs where compatible agents support plugins. It still works as plain Mar
 
 You know him. Tall hat. Bad grin. Worse patience.
 
-He watches your agent install a library for a native input, draw a service layer around one function, and redesign the roadmap to fix a button.
+He watches your agent add a helper for one condition, draw a service layer around one setting, and redesign the roadmap to fix a button.
 
 Then he calls the team.
 
 ## Before / After
 
-User asks for a simple profile form birthday field.
+User asks for a small settings change.
 
 | Before Gooblin | With Gooblin |
 | --- | --- |
-| Adds a date picker dependency. | The Clipper checks native input first. |
-| Creates a wrapper component. | Ground Control rejects the unnecessary abstraction. |
-| Adds custom styles. | Rubber Duck asks what behavior actually needs testing. |
-| Starts discussing timezone handling. | Yak Shaver cuts timezone discussion unless required. |
-| Expands profile form scope. | The change stays boring. |
-
-```html
-<input type="date" name="birthday" />
-```
+| Adds a new helper for one condition. | The Clipper checks whether existing code already covers it. |
+| Creates a service layer around one setting. | Ground Control rejects the abstraction until it pays rent. |
+| Fixes based on a guess. | Rubber Duck separates expected behavior from actual behavior. |
+| Starts redesigning the settings flow. | Yak Shaver cuts anything outside the requested change. |
+| Calls it done without proof. | The change ships with verification. |
 
 The point is not fewer lines. The point is fewer unnecessary decisions.
 
@@ -52,14 +48,25 @@ The point is not fewer lines. The point is fewer unnecessary decisions.
 
 | Teammate | Job | Belief |
 | --- | --- | --- |
-| **The Clipper** | Minimal-code senior engineer. Ponytail/Greybeard-inspired, but safer. | Smallest safe change wins. |
+| **The Clipper** | Minimal-code senior engineer who cuts unnecessary code, dependencies, rewrites, and abstractions. | Smallest safe change wins. |
 | **Ground Control** | Anti-Architecture-Astronaut product architect. | Every abstraction must pay rent. |
 | **Rubber Duck** | Debugging coach and contradiction finder. | Do not fix what you have not reproduced. |
 | **Yak Shaver** | Scope cutter and delivery PM. | If it does not unblock the goal, defer it. |
 
 ## How It Works
 
-Before writing code, Gooblin forces the agent through this ladder:
+Before writing code, `/gooblin` diagnoses the task type and routes to the smallest useful teammate set.
+
+Gooblin Router:
+
+- Code bloat, dependencies, rewrites, or smallest safe implementation: The Clipper.
+- Architecture, module boundaries, abstractions, scalability, or system design: Ground Control.
+- Bugs, failing tests, unexpected behavior, unclear cause, or reproduction: Rubber Duck.
+- MVP, scope, deadlines, task breakdown, roadmap, or rabbit holes: Yak Shaver.
+- Pre-merge, pre-release, or final review: Shipcheck using all four perspectives.
+- Ambiguous or high-risk work: full Gooblin Council.
+
+Then Gooblin uses this ladder:
 
 1. What is the actual product goal?
 2. What is the expected behavior?
@@ -109,7 +116,7 @@ If your agent does not support plugins yet, copy or reference:
 Then ask your coding agent:
 
 ```text
-Use Gooblin council mode for this task.
+Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
 
 Plugin support may vary by agent. If plugin installation is not available, Gooblin still works as a readable skill pack.
@@ -124,14 +131,14 @@ Stable surfaces and claim rules are documented in [stability](docs/stability.md)
 
 | Command | What it does |
 | --- | --- |
-| `/gooblin` | Full council review using all four teammates. |
-| `/clip` | The Clipper only: cuts code, dependencies, rewrites, and unnecessary abstractions. |
-| `/ground` | Ground Control only: reviews architecture and product fit. |
-| `/duck` | Rubber Duck only: debugging, reproduction, contradiction finding. |
-| `/yak` | Yak Shaver only: scope control and next shippable move. |
-| `/shipcheck` | Final pre-ship review before calling work done. |
+| `/gooblin` | Primary interface. Diagnoses the task and routes to the smallest useful teammate set. |
+| `/clip` | Advanced shortcut: The Clipper only, for code, dependencies, rewrites, and unnecessary abstractions. |
+| `/ground` | Advanced shortcut: Ground Control only, for architecture and product fit. |
+| `/duck` | Advanced shortcut: Rubber Duck only, for debugging, reproduction, and contradiction finding. |
+| `/yak` | Advanced shortcut: Yak Shaver only, for scope control and next shippable move. |
+| `/shipcheck` | Advanced shortcut: final pre-ship review before calling work done. |
 
-In some agents, commands may be exposed as skills instead of slash commands.
+The character commands exist for direct calls, but most users should start with `/gooblin`. In some agents, commands may be exposed as skills instead of slash commands.
 
 ## Examples
 

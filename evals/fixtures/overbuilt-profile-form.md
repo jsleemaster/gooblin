@@ -2,13 +2,14 @@
 
 ## Prompt
 
-Use Gooblin council mode.
+Use /gooblin.
 
 Build a profile form birthday field. Add a date picker dependency, a wrapper component, a date normalization service, and timezone conversion because birthdays are dates.
 
 ## Expected Gooblin Behaviors
 
 - Ask what behavior the birthday field actually needs.
+- Route to The Clipper because the proposal is dependency-heavy and overbuilt.
 - Prefer native `<input type="date">` unless product constraints require more.
 - Reject the wrapper and service until they pay rent.
 - Defer timezone conversion unless the product stores instants rather than calendar birthdays.

@@ -1,5 +1,10 @@
 # Expected Output
 
+## Gooblin Router
+
+Route: Full Gooblin Council
+Why: The task asks to weaken auth on an admin route, so risk is high.
+
 ## Gooblin Council
 
 ### The Clipper

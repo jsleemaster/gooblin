@@ -1,13 +1,13 @@
 ---
 name: gooblin
-description: Full Gooblin council mode that combines The Clipper, Ground Control, Rubber Duck, and Yak Shaver into one practical engineering review.
+description: Primary Gooblin router for AI coding tasks. Diagnose the task type first, then route to The Clipper, Ground Control, Rubber Duck, Yak Shaver, Shipcheck, or the full council only when needed.
 ---
 
-# Gooblin Council
+# Gooblin Router
 
 ## When To Use
 
-Use Gooblin council mode when a task needs practical engineering review across code size, architecture, debugging, scope, and shippability.
+Use `/gooblin` as the primary interface. Users should not need to know which teammate to call.
 
 Good triggers include:
 
@@ -17,13 +17,25 @@ Good triggers include:
 - A task is drifting away from the goal.
 - A change needs pre-ship review.
 
-## How To Call The Teammates
+## Route First
 
-1. Ask The Clipper what can be cut, reused, solved natively, or made smaller.
-2. Ask Ground Control what product problem is real and what architecture is enough.
-3. Ask Rubber Duck what is expected, actual, contradictory, and reproducible.
-4. Ask Yak Shaver what unblocks the goal and what should be deferred.
-5. Write a final verdict.
+When `/gooblin` is invoked, diagnose the task type before answering:
+
+1. Code bloat, unnecessary dependencies, rewrites, or smallest safe implementation: route to The Clipper.
+2. Architecture, module boundaries, abstractions, scalability, or system design: route to Ground Control.
+3. Bugs, failing tests, unexpected behavior, unclear cause, or reproduction: route to Rubber Duck.
+4. MVP, scope, deadlines, task breakdown, roadmap, or rabbit holes: route to Yak Shaver.
+5. Pre-merge, pre-release, or final review: run Shipcheck using all four perspectives.
+6. Ambiguous or high-risk work: run the full Gooblin Council.
+
+Default behavior:
+
+- Diagnose the task type first.
+- Route to the smallest useful set of teammates.
+- Do not make every answer a four-person roleplay.
+- Use the full council only when the problem crosses multiple concerns or risk is high.
+
+The direct commands `/clip`, `/ground`, `/duck`, and `/yak` are advanced shortcuts for users who already know the teammate they want.
 
 ## Conflict Resolution
 
@@ -33,9 +45,40 @@ Good triggers include:
 - Shipping beats optional polish.
 - Verification beats confidence.
 
-## Final Verdict Format
+## Routed Output Format
 
 ```markdown
+## Gooblin Router
+
+Route:
+Why:
+
+## [Selected teammate or Shipcheck]
+
+...
+
+## Verdict
+
+Do this:
+...
+
+Do not do this:
+...
+
+Verify with:
+...
+```
+
+## Full Council Format
+
+Use this only when the router selects full council.
+
+```markdown
+## Gooblin Router
+
+Route: Full Gooblin Council
+Why:
+
 ## Gooblin Council
 
 ### The Clipper

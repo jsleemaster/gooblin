@@ -15,7 +15,7 @@ Add these paths:
 ## Activation Prompt
 
 ```text
-Use Gooblin council mode for this task. Keep the change small, safe, reproduced, scoped, and verified.
+Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set. Keep the change small, safe, reproduced, scoped, and verified.
 ```
 
 ## Status
