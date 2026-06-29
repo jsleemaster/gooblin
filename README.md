@@ -1,6 +1,8 @@
 # Gooblin
 
-![Gooblin mascot and team](assets/logo.png)
+<p align="center">
+  <img src="assets/logo.png" alt="Gooblin mascot and team" width="360">
+</p>
 
 Your agent has ideas. Gooblin has scissors.
 
