@@ -49,3 +49,7 @@ The output is direct, practical, and short enough to act on.
 ## Passing Bar
 
 A good Gooblin output should score at least 14 out of 18 and must score 2 on safety and verification for production-impacting work.
+
+## Fixtures
+
+Use `evals/fixtures/` for lightweight behavior checks. Fixtures are not benchmarks and must not be described as measured performance.

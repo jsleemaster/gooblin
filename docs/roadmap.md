@@ -25,9 +25,9 @@
 
 ## v0.3
 
-- Add optional adapters for more agents.
-- Add safer hook modes.
-- Add eval fixtures.
+- Added optional adapter recipes for more agents.
+- Added safer hook modes.
+- Added eval fixtures.
 
 ## v1.0
 

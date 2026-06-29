@@ -24,6 +24,7 @@ The repository shape is inspired by Ponytail-style plugin distribution, but Goob
 - `.codex-plugin/`: Codex-style plugin manifest.
 - `.cursor/rules/`: Cursor-style fallback rules.
 - `plugins/gooblin/`: thin marketplace adapter with symlinks back to the root skill pack.
+- `adapters/`: optional host recipes for agents without the same plugin marketplace shape.
 - `plugin.yaml`: lightweight metadata for simple plugin loaders.
 - `package.json`: open-source distribution metadata only.
 
@@ -42,6 +43,13 @@ Hooks must remain tiny and safe:
 Hooks may remind the agent that Gooblin mode exists and point to bundled skills and commands.
 
 Hooks are optional. The skills must remain useful if every hook is disabled.
+
+Hook modes:
+
+- `GOOBLIN_HOOK_MODE=brief`: default reminder output.
+- `GOOBLIN_HOOK_MODE=quiet`: no reminder output.
+- `GOOBLIN_HOOK_MODE=verbose`: extra safety-floor reminders.
+- `GOOBLIN_HOOK_MODE=off` or `GOOBLIN_DISABLE=1`: disabled.
 
 ## Skill Pack Compatibility
 
