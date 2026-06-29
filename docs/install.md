@@ -48,6 +48,8 @@ The current release verifies local install behavior with:
 
 See [compatibility notes](compatibility.md) and [verified install paths](verified-install-paths.md) for the exact commands and results.
 
+For status checks, configuration, uninstall steps, and statusline recipes, see [operations](operations.md).
+
 ## Manual Installation
 
 For agents without plugin installation, clone the repo and point the agent at the docs:

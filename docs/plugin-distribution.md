@@ -66,6 +66,8 @@ Keep skills readable as plain Markdown:
 
 See `docs/claims-policy.md` for the full policy.
 
+See `docs/operations.md` for status, configuration, uninstall, and statusline recipes.
+
 Do not claim:
 
 - Marketplace approval.

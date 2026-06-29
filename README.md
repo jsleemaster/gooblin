@@ -132,6 +132,7 @@ Hooks are optional. They only inject Gooblin context and should never mutate use
 
 See [install docs](docs/install.md) and [compatibility notes](docs/compatibility.md) for currently verified local installer behavior.
 Optional host recipes for Codex, Claude Code, Gemini CLI, OpenCode, Devin, Hermes Agent, Cursor, Continue-style context, and generic agents live in [adapters](adapters/).
+Status, configuration, uninstall, and statusline recipes live in [operations](docs/operations.md).
 Stable surfaces and claim rules are documented in [stability](docs/stability.md), [verified install paths](docs/verified-install-paths.md), and [claims policy](docs/claims-policy.md).
 
 ## Commands
