@@ -29,6 +29,9 @@ const readme = read('README.md');
 const maintenance = read('docs/maintenance.md');
 const prTemplate = read('.github/pull_request_template.md');
 const adaptersIndex = read('adapters/README.md');
+const operations = read('docs/operations.md');
+const compatibility = read('docs/compatibility.md');
+const verifiedInstallPaths = read('docs/verified-install-paths.md');
 
 for (const phrase of [
   'Change Impact Matrix',
@@ -54,6 +57,19 @@ for (const phrase of [
 
 assert(fs.existsSync(`docs/releases/v${pkg.version}.md`), `docs/releases/v${pkg.version}.md must exist for package version`);
 assert(readme.includes('docs/maintenance.md'), 'README.md Development section must link docs/maintenance.md');
+assert(operations.includes(`installed, enabled  ${pkg.version}`), 'docs/operations.md Codex status example must match package version');
+assert(operations.includes(`Version: ${pkg.version}`), 'docs/operations.md Claude status example must match package version');
+
+for (const [file, text] of [
+  ['README.md', readme],
+  ['docs/compatibility.md', compatibility],
+  ['docs/verified-install-paths.md', verifiedInstallPaths],
+]) {
+  assert(text.includes(pkg.version), `${file} must mention current package version ${pkg.version}`);
+  assert(!text.includes('version-1.1.2'), `${file} must not keep stale README badge version 1.1.2`);
+  assert(!text.includes('version `1.1.2`'), `${file} must not keep stale install result version 1.1.2`);
+  assert(!text.includes('v1.1.2'), `${file} must not keep stale current-release label v1.1.2`);
+}
 
 const commandNames = filesIn('commands', '.md').map((file) => path.basename(file, '.md'));
 for (const command of commandNames) {

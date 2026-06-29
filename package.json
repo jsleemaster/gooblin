@@ -24,6 +24,7 @@
     "validate": "node scripts/validate.mjs",
     "validate:claims": "node scripts/validate-claims.mjs",
     "validate:fixtures": "node scripts/validate-fixtures.mjs",
+    "validate:hooks": "node scripts/validate-hooks.mjs",
     "validate:maintenance": "node scripts/validate-maintenance.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
     "validate:skill-pack": "node scripts/validate-skill-pack.mjs"

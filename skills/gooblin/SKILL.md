@@ -118,3 +118,5 @@ Before calling work done, check:
 - Did it preserve the safety floor?
 - Did it include verification?
 - Did it avoid inventing facts?
+
+For working tree, branch, or release reviews, return numbered findings first. Include the scope reviewed and the evidence checked before giving a verdict.
