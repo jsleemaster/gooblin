@@ -41,7 +41,7 @@ The repository includes:
 
 ## Verified Local Installer Path
 
-The v0.2.0 release verified local install behavior with:
+The current release verifies local install behavior with:
 
 - Claude Code `2.1.96`.
 - Codex CLI `0.141.0`.

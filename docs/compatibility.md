@@ -8,8 +8,8 @@ Checked on 2026-06-29.
 
 | Host | Local version | Verified result |
 | --- | --- | --- |
-| Claude Code | `2.1.96` | `gooblin@gooblin` version `1.0.0` installed and enabled from a local checkout. |
-| Codex CLI | `codex-cli 0.141.0` | `gooblin@gooblin` version `1.0.0` installed and enabled from a local checkout. |
+| Claude Code | `2.1.96` | `gooblin@gooblin` version `1.1.1` installed and enabled from a local checkout. |
+| Codex CLI | `codex-cli 0.141.0` | `gooblin@gooblin` version `1.1.1` installed and enabled from a local checkout. |
 
 ## Verified Commands
 
@@ -22,7 +22,7 @@ claude plugin install gooblin@gooblin --scope user
 claude plugin list
 ```
 
-Result: `gooblin@gooblin` installed with version `1.0.0` and status `enabled`.
+Result: `gooblin@gooblin` installed with version `1.1.1` and status `enabled`.
 
 Codex:
 
@@ -32,7 +32,7 @@ codex plugin add gooblin@gooblin --json
 codex plugin list
 ```
 
-Result: `gooblin@gooblin` installed with version `1.0.0` and status `installed, enabled`.
+Result: `gooblin@gooblin` installed with version `1.1.1` and status `installed, enabled`.
 
 ## Remote Install Status
 
