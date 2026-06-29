@@ -22,6 +22,23 @@ Gooblin is an open-source plugin-style Agent Skills pack. It is not an app, runt
 
 It installs where compatible agents support plugins. It still works as plain Markdown when they do not.
 
+## Intentionally Small
+
+Gooblin is not a full software-development lifecycle framework.
+
+It does not replace deep planning, TDD, systematic debugging, code review, or release engineering systems. It sits before them as a lightweight engineering judgment gate:
+
+- Is this overbuilt?
+- Are we guessing?
+- Did we reproduce it?
+- Is this abstraction paying rent?
+- What can we defer?
+- What proves the change?
+
+Use Gooblin when a full workflow is too much, but raw agent momentum is too risky.
+
+Gooblin stays small because the job is narrow: stop overbuilding before it reaches the repo.
+
 ## The Goblin In The Room
 
 You know him. Tall hat. Bad grin. Worse patience.
@@ -208,6 +225,10 @@ This repo should stay boring.
 **Q: Is Gooblin an agent runtime?**
 
 A: No. It is a plugin-style Agent Skills pack.
+
+**Q: Is Gooblin a full workflow system?**
+
+A: No. It is a lightweight engineering judgment gate. Use deeper planning, TDD, debugging, or review systems when the work needs them.
 
 **Q: Does it write code for me?**
 
