@@ -197,6 +197,7 @@ This repo should stay boring.
 - Keep plugin manifests aligned.
 - Update examples when behavior changes.
 - Run `npm run validate` before release.
+- Use [maintenance guardrails](docs/maintenance.md) when a change touches public behavior, distribution, examples, or release metadata.
 - Do not add runtime scaffolding unless explicitly needed.
 - Do not add fake automation.
 
