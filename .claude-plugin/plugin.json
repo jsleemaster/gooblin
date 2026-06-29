@@ -1,7 +1,10 @@
 {
   "name": "gooblin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A geeky product-engineering team for AI coding agents.",
-  "author": "jsleemaster",
+  "author": {
+    "name": "jsleemaster",
+    "url": "https://github.com/jsleemaster"
+  },
   "hooks": "./hooks/claude-codex-hooks.json"
 }

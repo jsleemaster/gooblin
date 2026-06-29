@@ -16,11 +16,12 @@
 
 ## v0.2
 
-- Verify Claude Code plugin install.
-- Verify Codex plugin install.
-- Refine logo asset if needed.
-- Add screenshots or demo GIF if available.
-- Add more examples.
+- Verified Claude Code local plugin install.
+- Verified Codex local plugin install.
+- Added marketplace manifests.
+- Added a thin marketplace adapter.
+- Added more examples.
+- Deferred screenshots or demo GIF until a real compatible-agent capture is available.
 
 ## v0.3
 

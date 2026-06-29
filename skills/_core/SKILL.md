@@ -1,6 +1,6 @@
 ---
 name: gooblin-core
-description: Shared engineering kernel for Gooblin skills: spec-first, smallest safe change, review, verification, safety floor, and learning ledger.
+description: "Shared engineering kernel for Gooblin skills: spec-first, smallest safe change, review, verification, safety floor, and learning ledger."
 ---
 
 # Gooblin Core

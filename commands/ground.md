@@ -1,3 +1,7 @@
+---
+description: Ground Control command for keeping architecture grounded in the actual product problem.
+---
+
 # /ground
 
 ## Purpose

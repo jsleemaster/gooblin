@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-111111">
+  <img alt="version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -92,10 +92,11 @@ You may need to send those as two separate prompts.
 
 ```bash
 codex plugin marketplace add jsleemaster/gooblin
+codex plugin add gooblin@gooblin
 codex
 ```
 
-Then open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
+You can also open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
 
 ### Manual fallback
 
@@ -114,6 +115,8 @@ Use Gooblin council mode for this task.
 Plugin support may vary by agent. If plugin installation is not available, Gooblin still works as a readable skill pack.
 
 Hooks are optional. They only inject Gooblin context and should never mutate user files automatically.
+
+See [install docs](docs/install.md) and [compatibility notes](docs/compatibility.md) for currently verified local installer behavior.
 
 ## Commands
 
@@ -136,6 +139,8 @@ In some agents, commands may be exposed as skills instead of slash commands.
 | [Architecture astronauting](examples/architecture-astronauting/) | Plugin platforms, event buses, and service layers before need. |
 | [Debugging without reproduction](examples/debugging-without-repro/) | Fixing before expected/actual/repro are clear. |
 | [Yak-shaving an MVP](examples/yak-shaving-mvp/) | Redesigning the system before shipping the page. |
+| [Unsafe auth shortcut](examples/unsafe-auth-shortcut/) | Over-cutting past the safety floor. |
+| [Plugin install verification](examples/plugin-install-verification/) | Separating verified install facts from assumptions. |
 
 These examples are not benchmarks.
 

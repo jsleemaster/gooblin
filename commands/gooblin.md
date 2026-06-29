@@ -1,3 +1,7 @@
+---
+description: Full Gooblin council command combining The Clipper, Ground Control, Rubber Duck, and Yak Shaver.
+---
+
 # /gooblin
 
 ## Purpose
