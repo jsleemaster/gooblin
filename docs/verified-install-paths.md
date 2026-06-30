@@ -2,6 +2,8 @@
 
 This page separates verified behavior from intended distribution commands.
 
+Current package version: `1.2.1`. Installer verification should be repeated after this release because local filesystem access was restricted during the release preparation session.
+
 ## Verified Locally
 
 Checked on 2026-06-29 from `/Users/smlee/Gooblin`.
@@ -11,14 +13,14 @@ Checked on 2026-06-29 from `/Users/smlee/Gooblin`.
 | Claude Code | `2.1.96` | `claude plugin marketplace add /Users/smlee/Gooblin`, `claude plugin install gooblin@gooblin --scope user`, `claude plugin list`. |
 | Codex CLI | `0.141.0` | `codex plugin marketplace add /Users/smlee/Gooblin --json`, `codex plugin add gooblin@gooblin --json`, `codex plugin list`. |
 
-Expected local result for v1.2.0:
+Expected local result for current package version v1.2.1:
 
-- Claude Code: `gooblin@gooblin`, version `1.2.0`, status `enabled`.
-- Codex CLI: `gooblin@gooblin`, version `1.2.0`, status `installed, enabled`.
+- Claude Code: `gooblin@gooblin`, version `1.2.1`, status `enabled`.
+- Codex CLI: `gooblin@gooblin`, version `1.2.1`, status `installed, enabled`.
 
 ## Verified From Git Branch
 
-Codex CLI was also checked against the remote release branch before merge:
+Codex CLI was checked against the remote release branch before the v1.2.0 merge:
 
 ```bash
 codex plugin marketplace add jsleemaster/gooblin --ref release/v1.2.0
