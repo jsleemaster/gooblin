@@ -20,6 +20,8 @@
 
 Gooblin is an open-source plugin-style Agent Skills pack. It is not an app, runtime, framework, cloud agent, messaging bot, or npm library.
 
+Website: [jsleemaster.github.io/gooblin](https://jsleemaster.github.io/gooblin/).
+
 It installs where compatible agents support plugins. It still works as plain Markdown when they do not.
 
 ## Intentionally Small
