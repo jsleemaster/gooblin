@@ -2,6 +2,8 @@
 
 These notes record what has actually been checked. They are not marketplace approval claims.
 
+Current package version: `1.2.1`. The latest local installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
+
 ## Latest Local Verification
 
 Checked on 2026-06-29.

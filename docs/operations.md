@@ -15,7 +15,7 @@ codex plugin list
 Expected shape when installed:
 
 ```text
-gooblin@gooblin  installed, enabled  1.2.0
+gooblin@gooblin  installed, enabled  1.2.1
 ```
 
 Claude Code:
@@ -28,7 +28,7 @@ Expected shape when installed:
 
 ```text
 gooblin@gooblin
-Version: 1.2.0
+Version: 1.2.1
 Status: enabled
 ```
 
