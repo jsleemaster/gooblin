@@ -48,10 +48,16 @@
     .card p { margin: 0; color: var(--muted); font-size: 14px; }
     .ladder { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0; list-style: none; }
     .ladder li { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fff; }
+    .install-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .install-card { border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: #fff; }
+    .install-card h3 { margin: 0 0 8px; font-size: 18px; }
+    .install-card p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+    .status { display: inline-flex; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--muted); font-size: 12px; font-weight: 700; }
     pre { overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: #111; color: #fff; font-size: 14px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
     footer { padding: 34px 0; color: var(--muted); font-size: 14px; }
-    @media (max-width: 820px) {
-      .hero-grid, .grid, .ladder { grid-template-columns: 1fr; }
+    @media (max-width: 920px) {
+      .hero-grid, .grid, .ladder, .install-grid { grid-template-columns: 1fr; }
       header { position: static; }
       .links { display: none; }
       .hero { padding-top: 42px; }
@@ -114,12 +120,57 @@
     <section id="install">
       <div class="wrap">
         <h2>Install</h2>
-        <p>Gooblin works as a plugin where supported and as readable Markdown everywhere else.</p>
-        <pre><code>codex plugin marketplace add jsleemaster/gooblin
-codex plugin add gooblin@gooblin</code></pre>
-        <pre><code>/plugin marketplace add jsleemaster/gooblin
+        <p>Gooblin is agent-agnostic. Use the path your agent actually supports: plugin marketplace, direct skill-pack reference, or manual Markdown mode.</p>
+        <div class="install-grid">
+          <article class="install-card">
+            <span class="status">Plugin path</span>
+            <h3>Claude Code</h3>
+            <p>Use the slash-command installer when Claude Code plugin support is available.</p>
+            <pre><code>/plugin marketplace add jsleemaster/gooblin
 /plugin install gooblin@gooblin</code></pre>
-        <p>Manual fallback: reference <code>AGENTS.md</code>, <code>skills/</code>, and <code>commands/</code>, then ask your coding agent to use <code>/gooblin</code>.</p>
+          </article>
+          <article class="install-card">
+            <span class="status">Plugin path</span>
+            <h3>Codex</h3>
+            <p>Use the Codex plugin marketplace, then start a fresh thread after installation.</p>
+            <pre><code>codex plugin marketplace add jsleemaster/gooblin
+codex plugin add gooblin@gooblin
+codex</code></pre>
+          </article>
+          <article class="install-card">
+            <span class="status">Manual path</span>
+            <h3>Any coding agent</h3>
+            <p>If plugins are unavailable, reference the readable skill pack directly.</p>
+            <pre><code>AGENTS.md
+skills/
+commands/
+adapters/</code></pre>
+          </article>
+        </div>
+        <div class="install-grid">
+          <article class="install-card">
+            <span class="status">Not claimed yet</span>
+            <h3>NPM / npx</h3>
+            <p>An npx command is normally a tiny installer that copies or links skill files. Gooblin does not claim a supported npx installer until a release exposes and verifies one.</p>
+            <pre><code># Not a supported Gooblin command yet
+npx gooblin</code></pre>
+          </article>
+          <article class="install-card">
+            <span class="status">Adapter path</span>
+            <h3>Other agents</h3>
+            <p>Gemini CLI, OpenCode, Devin, Hermes Agent, Cursor, Continue-style context, and generic hosts should use the adapter docs as host-specific recipes, not separate products.</p>
+            <pre><code>adapters/
+docs/compatibility.md
+docs/verified-install-paths.md</code></pre>
+          </article>
+          <article class="install-card">
+            <span class="status">Primary UX</span>
+            <h3>Start with /gooblin</h3>
+            <p>Users should not need to pick a teammate. The router chooses the smallest useful review mode.</p>
+            <pre><code>/gooblin Review this task before editing.</code></pre>
+          </article>
+        </div>
+        <p>Hooks are optional. They only inject Gooblin context and should never mutate user files automatically.</p>
       </div>
     </section>
   </main>
