@@ -1,8 +1,9 @@
 import fs from "node:fs/promises";
 
 const endpoint = "https://models.github.ai/inference/chat/completions";
-const model = process.env.MODEL || "openai/gpt-4.1";
+const model = process.env.MODEL || "openai/gpt-4o-mini";
 const token = process.env.GITHUB_TOKEN;
+const timeoutMs = Number(process.env.MODEL_TIMEOUT_MS || "60000");
 
 if (!token) {
   throw new Error("GITHUB_TOKEN is required");
@@ -76,9 +77,12 @@ const gooblinSystem = `You are a practical coding agent using Gooblin council mo
 
 const judgeSystem = `You are scoring paired coding-agent outputs for a Gooblin pilot evaluation. Use the rubric exactly. Return JSON only. Be strict. Favor evidence, scoped reasoning, and concrete verification over style.`;
 
-async function complete(system, user, maxTokens = 1000) {
+async function complete(label, system, user, maxTokens = 1000) {
+  console.log(`Calling model for ${label}`);
+  const startedAt = Date.now();
   const response = await fetch(endpoint, {
     method: "POST",
+    signal: AbortSignal.timeout(timeoutMs),
     headers: {
       "Accept": "application/vnd.github+json",
       "Authorization": `Bearer ${token}`,
@@ -97,6 +101,7 @@ async function complete(system, user, maxTokens = 1000) {
   });
 
   const text = await response.text();
+  console.log(`Model call completed for ${label} in ${Date.now() - startedAt}ms with status ${response.status}`);
   if (!response.ok) {
     throw new Error(`Model request failed ${response.status}: ${text}`);
   }
@@ -131,12 +136,12 @@ const results = [];
 
 for (const task of tasks) {
   console.log(`Running ${task.id} with ${model}`);
-  const baselineOutput = await complete(baselineSystem, task.prompt, 1000);
-  const gooblinOutput = await complete(gooblinSystem, task.prompt, 1000);
+  const baselineOutput = await complete(`${task.id} baseline`, baselineSystem, task.prompt, 1000);
+  const gooblinOutput = await complete(`${task.id} gooblin`, gooblinSystem, task.prompt, 1000);
 
   const judgePrompt = `Rubric:\n${rubric}\n\nMetrics:\n${metrics.join(", ")}\n\nTask:\n${JSON.stringify(task, null, 2)}\n\nBaseline output:\n${baselineOutput}\n\nGooblin output:\n${gooblinOutput}\n\nReturn JSON only with this shape:\n{\n  "task_id": "...",\n  "project": "...",\n  "scores": { "metric_name": { "baseline": 0, "gooblin": 0, "notes": "..." } },\n  "totals": { "baseline": 0, "gooblin": 0 },\n  "winner": "baseline|gooblin|tie",\n  "limitations": ["..."]\n}`;
 
-  const judgeOutput = await complete(judgeSystem, judgePrompt, 1400);
+  const judgeOutput = await complete(`${task.id} judge`, judgeSystem, judgePrompt, 1400);
   const parsed = extractJson(judgeOutput);
   if (!parsed.totals && parsed.scores) {
     parsed.totals = {

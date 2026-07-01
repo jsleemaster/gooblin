@@ -6,7 +6,7 @@ on:
       model:
         description: GitHub Models model id
         required: false
-        default: openai/gpt-4.1
+        default: openai/gpt-4o-mini
 
 permissions:
   contents: read
@@ -23,6 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODEL: ${{ inputs.model }}
+          MODEL_TIMEOUT_MS: 60000
         run: node scripts/run-benchmark-pilot.mjs
 
       - name: Upload benchmark output
