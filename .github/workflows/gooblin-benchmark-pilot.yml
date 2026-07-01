@@ -7,6 +7,10 @@ on:
         description: GitHub Models model id
         required: false
         default: openai/gpt-4o-mini
+      task_ids:
+        description: Optional comma-separated task ids
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -23,6 +27,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODEL: ${{ inputs.model }}
+          TASK_IDS: ${{ inputs.task_ids }}
           MODEL_TIMEOUT_MS: 60000
         run: node scripts/run-benchmark-pilot.mjs
 
