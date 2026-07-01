@@ -2,7 +2,7 @@
 
 Gooblin should stay boring to operate.
 
-This repo does not ship a daemon, background service, telemetry collector, or runtime config system. Operations are simple checks and reversible install/remove steps for hosts that support plugins.
+This repo does not ship a daemon, background service, telemetry collector, or runtime config system. Operations are simple checks and reversible install/remove steps for hosts that support plugins or the optional npx skill-pack copy.
 
 ## Status Checks
 
@@ -15,7 +15,7 @@ codex plugin list
 Expected shape when installed:
 
 ```text
-gooblin@gooblin  installed, enabled  1.2.1
+gooblin@gooblin  installed, enabled  1.3.0
 ```
 
 Claude Code:
@@ -28,11 +28,17 @@ Expected shape when installed:
 
 ```text
 gooblin@gooblin
-Version: 1.2.1
+Version: 1.3.0
 Status: enabled
 ```
 
-Global package metadata, if installed locally with npm:
+GitHub-source npx skill-pack copy:
+
+```bash
+npx github:jsleemaster/gooblin status
+```
+
+Global package metadata, if installed locally with npm after package publish:
 
 ```bash
 npm list -g gooblin --depth=0
@@ -86,7 +92,13 @@ claude plugin uninstall gooblin
 claude plugin marketplace remove gooblin
 ```
 
-Global package metadata, if installed locally with npm:
+GitHub-source npx skill-pack copy:
+
+```bash
+npx github:jsleemaster/gooblin uninstall
+```
+
+Global package metadata, if installed locally with npm after package publish:
 
 ```bash
 npm uninstall -g gooblin
@@ -117,6 +129,8 @@ If plugin installation breaks, remove the plugin and marketplace entry, then use
 ```text
 Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
+
+If an npx copy breaks, remove `.gooblin/` with the npx `uninstall` command or by deleting that directory manually after confirming it contains only Gooblin files.
 
 If a host-specific statusline setting breaks, remove that host setting. Gooblin does not currently create statusline files or mutate host settings automatically.
 

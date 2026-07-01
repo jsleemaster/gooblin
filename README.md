@@ -11,14 +11,14 @@
 </p>
 
 <p align="center">
-  <img alt="version 1.2.1" src="https://img.shields.io/badge/version-1.2.1-111111">
+  <img alt="version 1.3.0" src="https://img.shields.io/badge/version-1.3.0-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
   <img alt="no telemetry" src="https://img.shields.io/badge/telemetry-no-111111">
 </p>
 
-Gooblin is an open-source plugin-style Agent Skills pack. It is not an app, runtime, framework, cloud agent, messaging bot, or npm library.
+Gooblin is an open-source plugin-style Agent Skills pack. It is not an app, runtime, framework, cloud agent, messaging bot, or general-purpose npm runtime.
 
 Website: [jsleemaster.github.io/gooblin](https://jsleemaster.github.io/gooblin/).
 
@@ -131,6 +131,22 @@ codex
 
 You can also open `/plugins`, select the Gooblin marketplace, install Gooblin, review hooks if prompted, and start a new thread.
 
+### npx skill-pack installer
+
+For agents without plugin marketplace support, npx can copy Gooblin into the current repo as a readable skill pack:
+
+```bash
+npx github:jsleemaster/gooblin install
+```
+
+After the npm package is published, the shorthand will be:
+
+```bash
+npx gooblin install
+```
+
+The installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, `status`, and `uninstall` for safe operation.
+
 ### Manual fallback
 
 If your agent does not support plugins yet, copy or reference:
@@ -222,7 +238,7 @@ This repo should stay boring.
 - Do not add runtime scaffolding unless explicitly needed.
 - Do not add fake automation.
 
-`package.json` exists only as minimal open-source plugin metadata. Do not add app dependencies, build tooling, or runtime scaffolding.
+`package.json` exists only as minimal open-source plugin metadata and installer metadata. Do not add app dependencies, build tooling, or runtime scaffolding.
 
 ## FAQ
 

@@ -1,6 +1,6 @@
 {
   "name": "gooblin",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A geeky product-engineering team for AI coding agents.",
   "license": "MIT",
   "repository": {
@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/jsleemaster/gooblin/issues"
   },
-  "homepage": "https://github.com/jsleemaster/gooblin#readme",
+  "homepage": "https://jsleemaster.github.io/gooblin/",
   "keywords": [
     "ai-agents",
     "coding-agents",
@@ -18,8 +18,12 @@
     "code-review",
     "debugging",
     "product-engineering",
-    "scope-control"
+    "scope-control",
+    "npx"
   ],
+  "bin": {
+    "gooblin": "bin/gooblin.mjs"
+  },
   "scripts": {
     "validate": "node scripts/validate.mjs",
     "validate:claims": "node scripts/validate-claims.mjs",
@@ -27,10 +31,15 @@
     "validate:hooks": "node scripts/validate-hooks.mjs",
     "validate:maintenance": "node scripts/validate-maintenance.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
+    "validate:npx-installer": "node scripts/validate-npx-installer.mjs",
     "validate:skill-pack": "node scripts/validate-skill-pack.mjs"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "files": [
     "AGENTS.md",
+    "bin/",
     "skills/",
     "commands/",
     "hooks/",

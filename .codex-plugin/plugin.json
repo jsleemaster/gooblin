@@ -1,9 +1,9 @@
 {
   "name": "gooblin",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A geeky product-engineering team for AI coding agents.",
   "author": "jsleemaster",
-  "homepage": "https://github.com/jsleemaster/gooblin",
+  "homepage": "https://jsleemaster.github.io/gooblin/",
   "repository": "https://github.com/jsleemaster/gooblin",
   "license": "MIT",
   "keywords": [
@@ -28,7 +28,7 @@
       "Skills",
       "Lifecycle hooks"
     ],
-    "websiteURL": "https://github.com/jsleemaster/gooblin",
+    "websiteURL": "https://jsleemaster.github.io/gooblin/",
     "defaultPrompt": [
       "Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.",
       "Review this diff with Gooblin.",

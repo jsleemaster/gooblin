@@ -2,7 +2,7 @@
 
 These notes record what has actually been checked. They are not marketplace approval claims.
 
-Current package version: `1.2.1`. The latest local installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
+Current package version: `1.3.0`. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
 
 ## Latest Local Verification
 
@@ -36,6 +36,22 @@ codex plugin list
 
 Result: `gooblin@gooblin` installed with version `1.2.0` and status `installed, enabled`.
 
+## npx Installer Status
+
+Release `v1.3.0` exposes a minimal dependency-free bin installer:
+
+```bash
+npx github:jsleemaster/gooblin install
+```
+
+The installer copies readable Gooblin files into `.gooblin/` and does not enable hooks, edit host settings, access the network, or collect telemetry.
+
+The npm registry shorthand is not claimed as verified until the package is published and checked:
+
+```bash
+npx gooblin install
+```
+
 ## Remote Install Status
 
 The intended remote commands remain:
@@ -54,3 +70,4 @@ Remote install should be rechecked after each release tag is pushed. Do not desc
 - Claude Code validation currently warns when a marketplace description is absent because the local validator does not accept the same root `description` key used by some public marketplace manifests.
 - Hooks require Node.js when enabled.
 - Hooks are reminder-only and can be disabled with `GOOBLIN_DISABLE=1`.
+- The npx installer requires Node.js 18 or newer.
