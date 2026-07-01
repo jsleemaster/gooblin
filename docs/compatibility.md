@@ -46,7 +46,7 @@ npx github:jsleemaster/gooblin install
 
 The installer copies readable Gooblin files into `.gooblin/` and does not enable hooks, edit host settings, access the network, or collect telemetry.
 
-The npm registry shorthand is not claimed as verified until the package is published and checked:
+The npm registry shorthand is tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43) and is not claimed as verified until the package is published and checked:
 
 ```bash
 npx gooblin install

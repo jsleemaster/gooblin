@@ -139,7 +139,12 @@ For agents without plugin marketplace support, npx can copy Gooblin into the cur
 npx github:jsleemaster/gooblin install
 ```
 
-After the npm package is published, the shorthand will be:
+Current status:
+
+- GitHub-source npx is the released path.
+- npm registry shorthand is tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43) and is not published or verified yet.
+
+The future registry shorthand is:
 
 ```bash
 npx gooblin install

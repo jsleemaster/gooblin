@@ -47,6 +47,13 @@ Use this path when a host does not support plugin installation but can run npm p
 npx github:jsleemaster/gooblin install
 ```
 
+Current status:
+
+| Path | Status |
+| --- | --- |
+| `npx github:jsleemaster/gooblin install` | Released GitHub-source installer path. |
+| `npx gooblin install` | Pending npm registry publish and verification. Tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43). |
+
 The installer copies a readable skill pack into `.gooblin/` in the current working directory. It copies:
 
 - `AGENTS.md`
@@ -69,7 +76,7 @@ npx github:jsleemaster/gooblin uninstall
 
 Use `--force` only when intentionally replacing or removing an existing `.gooblin/` directory.
 
-After the npm package is published and verified, the registry shorthand will be:
+The future npm registry shorthand is:
 
 ```bash
 npx gooblin install
@@ -193,6 +200,8 @@ Use the GitHub-source command until the npm registry package is published and ve
 ```bash
 npx github:jsleemaster/gooblin install
 ```
+
+The npm registry shorthand is tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43).
 
 ### Hooks not trusted
 
