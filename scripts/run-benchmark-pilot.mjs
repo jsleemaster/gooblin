@@ -5,20 +5,9 @@ const model = process.env.MODEL || "openai/gpt-4o-mini";
 const token = process.env.GITHUB_TOKEN;
 const timeoutMs = Number(process.env.MODEL_TIMEOUT_MS || "60000");
 
-if (!token) {
-  throw new Error("GITHUB_TOKEN is required");
-}
+if (!token) throw new Error("GITHUB_TOKEN is required");
 
-const metrics = [
-  "task_solved",
-  "unnecessary_code_avoided",
-  "dependency_avoided",
-  "abstraction_control",
-  "scope_control",
-  "debugging_discipline",
-  "verification_quality",
-  "safety_preserved"
-];
+const metrics = ["task_solved", "unnecessary_code_avoided", "dependency_avoided", "abstraction_control", "scope_control", "debugging_discipline", "verification_quality", "safety_preserved"];
 
 const rubric = `Score each metric from 0 to 5.
 0 means missing, harmful, or counterproductive.
@@ -121,10 +110,14 @@ Manual checks include VS Code panel review, JSONL-only mode, statusline metrics,
   }
 ];
 
+const requestedTaskIds = (process.env.TASK_IDS || "").split(",").map((id) => id.trim()).filter(Boolean);
+const selectedTasks = requestedTaskIds.length ? tasks.filter((task) => requestedTaskIds.includes(task.id)) : tasks;
+const missingTaskIds = requestedTaskIds.filter((id) => !tasks.some((task) => task.id === id));
+if (missingTaskIds.length) throw new Error(`Unknown TASK_IDS: ${missingTaskIds.join(", ")}`);
+if (!selectedTasks.length) throw new Error("No benchmark tasks selected");
+
 const baselineSystem = `You are a practical coding agent. Answer the user request directly with an implementation or review plan. Be concise and useful.`;
-
 const gooblinSystem = `You are a practical coding agent using Gooblin council mode. Diagnose the task type first, then route to the smallest useful teammate set. Prefer the smallest safe change. Cut unnecessary dependencies, rewrites, abstractions, guessing, and scope creep. Preserve the safety floor. Require concrete verification. Do not make every answer a four person roleplay.`;
-
 const judgeSystem = `You are scoring paired coding-agent outputs for a Gooblin pilot evaluation. Use the rubric exactly. Return JSON only. Be strict. Favor evidence, scoped reasoning, and concrete verification over style.`;
 
 async function complete(label, system, user, maxTokens = 1000) {
@@ -139,37 +132,19 @@ async function complete(label, system, user, maxTokens = 1000) {
       "Content-Type": "application/json",
       "X-GitHub-Api-Version": "2022-11-28"
     },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      max_tokens: maxTokens,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user }
-      ]
-    })
+    body: JSON.stringify({ model, temperature: 0.2, max_tokens: maxTokens, messages: [{ role: "system", content: system }, { role: "user", content: user }] })
   });
-
   const text = await response.text();
   console.log(`Model call completed for ${label} in ${Date.now() - startedAt}ms with status ${response.status}`);
-  if (!response.ok) {
-    throw new Error(`Model request failed ${response.status}: ${text}`);
-  }
-
+  if (!response.ok) throw new Error(`Model request failed ${response.status}: ${text}`);
   const data = JSON.parse(text);
   return data.choices?.[0]?.message?.content ?? "";
 }
 
 function extractJson(text) {
   const match = text.match(/\{[\s\S]*\}/);
-  if (!match) {
-    return { parse_error: true, raw: text };
-  }
-  try {
-    return JSON.parse(match[0]);
-  } catch (error) {
-    return { parse_error: true, error: String(error), raw: text };
-  }
+  if (!match) return { parse_error: true, raw: text };
+  try { return JSON.parse(match[0]); } catch (error) { return { parse_error: true, error: String(error), raw: text }; }
 }
 
 function totalFromScores(scores, side) {
@@ -181,27 +156,17 @@ function totalFromScores(scores, side) {
 }
 
 await fs.mkdir("benchmark-output/raw", { recursive: true });
-
 const results = [];
 
-for (const task of tasks) {
+for (const task of selectedTasks) {
   console.log(`Running ${task.id} with ${model}`);
   const baselineOutput = await complete(`${task.id} baseline`, baselineSystem, task.prompt, 1000);
   const gooblinOutput = await complete(`${task.id} gooblin`, gooblinSystem, task.prompt, 1000);
-
   const judgePrompt = `Rubric:\n${rubric}\n\nMetrics:\n${metrics.join(", ")}\n\nTask:\n${JSON.stringify(task, null, 2)}\n\nBaseline output:\n${baselineOutput}\n\nGooblin output:\n${gooblinOutput}\n\nReturn JSON only with this shape:\n{\n  "task_id": "...",\n  "project": "...",\n  "scores": { "metric_name": { "baseline": 0, "gooblin": 0, "notes": "..." } },\n  "totals": { "baseline": 0, "gooblin": 0 },\n  "winner": "baseline|gooblin|tie",\n  "limitations": ["..."]\n}`;
-
   const judgeOutput = await complete(`${task.id} judge`, judgeSystem, judgePrompt, 1400);
   const parsed = extractJson(judgeOutput);
-  if (!parsed.totals && parsed.scores) {
-    parsed.totals = {
-      baseline: totalFromScores(parsed.scores, "baseline"),
-      gooblin: totalFromScores(parsed.scores, "gooblin")
-    };
-  }
-
+  if (!parsed.totals && parsed.scores) parsed.totals = { baseline: totalFromScores(parsed.scores, "baseline"), gooblin: totalFromScores(parsed.scores, "gooblin") };
   results.push({ task, baselineOutput, gooblinOutput, judgeOutput, parsed });
-
   await fs.writeFile(`benchmark-output/raw/${task.id}-baseline.md`, baselineOutput);
   await fs.writeFile(`benchmark-output/raw/${task.id}-gooblin.md`, gooblinOutput);
   await fs.writeFile(`benchmark-output/raw/${task.id}-judge.json`, JSON.stringify(parsed, null, 2));
@@ -214,19 +179,18 @@ summary.push("Pilot measurement only. Not a public benchmark claim.");
 summary.push("");
 summary.push(`Date: ${new Date().toISOString()}`);
 summary.push(`Model: ${model}`);
+summary.push(`Selected tasks: ${selectedTasks.map((task) => task.id).join(", ")}`);
 summary.push("Method: same model, same task prompt, baseline system prompt vs Gooblin system prompt, model-judged with Gooblin rubric.");
 summary.push("Limitations: small sample, prompt-only treatment, model judge, no code execution, no human review yet.");
 summary.push("");
 summary.push("| Task | Project | Baseline | Gooblin | Delta | Winner |");
 summary.push("| --- | --- | ---: | ---: | ---: | --- |");
-
 for (const result of results) {
   const baseline = result.parsed?.totals?.baseline;
   const gooblin = result.parsed?.totals?.gooblin;
   const delta = Number.isFinite(baseline) && Number.isFinite(gooblin) ? gooblin - baseline : "n/a";
   summary.push(`| ${result.task.id} | ${result.task.project} | ${baseline ?? "n/a"} | ${gooblin ?? "n/a"} | ${delta} | ${result.parsed?.winner ?? "n/a"} |`);
 }
-
 summary.push("");
 summary.push("## Metric Notes");
 summary.push("");
@@ -238,13 +202,9 @@ for (const result of results) {
     if (!item) continue;
     summary.push(`- ${metric}: baseline ${item.baseline}, gooblin ${item.gooblin}. ${item.notes}`);
   }
-  if (Array.isArray(result.parsed?.limitations)) {
-    summary.push(`- Limitations: ${result.parsed.limitations.join("; ")}`);
-  }
+  if (Array.isArray(result.parsed?.limitations)) summary.push(`- Limitations: ${result.parsed.limitations.join("; ")}`);
   summary.push("");
 }
-
 await fs.writeFile("benchmark-output/summary.md", summary.join("\n"));
-await fs.writeFile("benchmark-output/results.json", JSON.stringify({ model, generatedAt: new Date().toISOString(), results }, null, 2));
-
+await fs.writeFile("benchmark-output/results.json", JSON.stringify({ model, selectedTaskIds: selectedTasks.map((task) => task.id), generatedAt: new Date().toISOString(), results }, null, 2));
 console.log(summary.join("\n"));
