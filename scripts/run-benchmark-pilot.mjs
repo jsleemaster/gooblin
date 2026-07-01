@@ -47,6 +47,25 @@ Key tasks listed in the issue:
 Related files: src/terminal.rs, src/vterm.rs, src/app.rs`
   },
   {
+    id: "cltree-homebrew-core-submission",
+    project: "jsleemaster/cltree",
+    taskType: "roadmap and release scope",
+    prompt: `Review this roadmap issue and propose the next shippable move. Do not edit code. Separate what can be done now from what must wait for external criteria.
+
+Repository context:
+cltree is an npm and bun installable Rust terminal UI that works beside Claude Code CLI. Current installation is npm install -g cltree or bun install -g cltree.
+
+Open issue context:
+Submit cltree formula to Homebrew core so users can install with brew install cltree without a custom tap.
+Current install path:
+brew tap jsleemaster/tap
+brew install cltree
+Requirements:
+- Meet Homebrew core notable software criteria
+- Formula must pass brew audit --strict
+References include Homebrew acceptable formulae and Homebrew pull request docs.`
+  },
+  {
     id: "layo-figma-image-fill-shipcheck",
     project: "jsleemaster/layo",
     taskType: "pre merge shipcheck",
@@ -68,6 +87,37 @@ Verification reported:
 Notes:
 - Missing packaged Figma image assets remain warnings and fall back to geometry mapping.
 - Worktree preserved for PR feedback.`
+  },
+  {
+    id: "ranch-agent-rail-control-shipcheck",
+    project: "jsleemaster/ranch-agent",
+    taskType: "large PR shipcheck and scope control",
+    prompt: `Run a pre-merge review on this large PR summary. Do not edit code. Identify whether the PR should stay bundled, what risks need verification, what can be deferred, and what checks should block merge.
+
+Repository context:
+Ranch-Agent is a VS Code extension for visualizing multi-agent runtime activity from Claude JSONL logs. It has extension host code, React webview UI, shared runtime types, JSONL discovery, skill normalization, main-branch risk highlighting, optional debug logging, and operator setup docs.
+
+PR context:
+Rebrand ranch-agent into premium rail control room.
+Runtime changes:
+- Multi-source runtime ingestion for JSONL plus HTTP hooks.
+- JSONL remains primary source of truth with short-window dedupe.
+- Runtime signals split into analytics labels.
+Session and statusline changes:
+- Separate stable lineage identity from actual Claude session identity.
+- Add session archive with rollover, finished, stale cleanup reasons.
+- Add Claude statusLine.command stdin bridge for context usage, trip throughput, and operating cost.
+- Add fan-out wrapper so Ranch-Agent and claude-hud can run together.
+Webview and docs changes:
+- Rebrand UI to premium rail control room with Korean rail labels.
+- Replace minimap with 5-stop route diagram.
+- Rewrite README, HTTP hooks docs, statusline bridge docs, AGENTS guidance, and ignores.
+Verification listed:
+- npm run build
+- npm --prefix extension run test
+- npm --prefix extension run typecheck
+- npm --prefix webview-ui run typecheck
+Manual checks include VS Code panel review, JSONL-only mode, statusline metrics, session archive, and claude-hud fan-out.`
   }
 ];
 
