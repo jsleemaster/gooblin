@@ -65,6 +65,39 @@ Score each metric from 0 to 5:
 
 See `evals/rubric.md` for 0, 3, and 5 examples.
 
+## Pilot Runs
+
+This section records pilot measurements only. They are not benchmark claims.
+
+Pilot setup:
+
+- Runner: GitHub Actions workflow.
+- Model path: GitHub Models with `openai/gpt-4o-mini`.
+- Comparison: baseline prompt versus the same prompt with Gooblin guidance.
+- Scoring: model-judged against `evals/rubric.md`.
+- Sample size: 4 tasks.
+
+| Task | Baseline total | Gooblin total | Delta | Result |
+| --- | ---: | ---: | ---: | --- |
+| cltree-agent-cli-support | 32 | 36 | +4 | Gooblin improved the architecture/scope-risk answer. |
+| layo-figma-image-fill-shipcheck | 36 | 36 | 0 | Tie on an already-scoped review task. |
+| cltree-homebrew-core-submission | 40 | 40 | 0 | Tie on a release-planning task. |
+| ranch-agent-rail-control-shipcheck | 43 | 43 | 0 | Tie on a high-safety shipcheck task. |
+
+Evidence links:
+
+- [2-task pilot run](https://github.com/jsleemaster/gooblin/actions/runs/28500524965), artifact `8002797090`.
+- [Homebrew task run](https://github.com/jsleemaster/gooblin/actions/runs/28500946701), artifact `8002961939`.
+- [Ranch task run](https://github.com/jsleemaster/gooblin/actions/runs/28500987731), artifact `8002983884`.
+
+Limitations:
+
+- The pilot is small.
+- Scores are model-judged, not a human adjudicated benchmark.
+- Tasks are repo-inspired prompts, not full live coding sessions.
+- The results support only a cautious pilot signal: Gooblin helped one architecture/scope-risk task and tied three already-scoped tasks.
+- Do not summarize this as faster, safer, cheaper, or generally better.
+
 ## Example Result Table
 
 This is an example format only. These are placeholder values, not real results.

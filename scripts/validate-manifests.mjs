@@ -25,6 +25,9 @@ assert(!pkg.dependencies, 'package must not declare runtime dependencies');
 assert(!pkg.devDependencies, 'package must not declare dev dependencies');
 assert(!pkg.optionalDependencies, 'package must not declare optional dependencies');
 assert(!pkg.peerDependencies, 'package must not declare peer dependencies');
+assert(pkg.bin?.gooblin === 'bin/gooblin.mjs', 'package bin.gooblin must point at bin/gooblin.mjs');
+assert(pkg.engines?.node === '>=18', 'package engines.node must be >=18');
+assert(pkg.files.includes('bin/'), 'package files must include bin/');
 assert(pkg.files.includes('scripts/'), 'package files must include scripts/');
 
 for (const [name, value] of [
@@ -43,6 +46,7 @@ assert(claudeMarketplace.plugins?.[0]?.source === './plugins/gooblin', 'Claude m
 
 for (const path of [
   'plugins/gooblin/AGENTS.md',
+  'plugins/gooblin/bin',
   'plugins/gooblin/skills',
   'plugins/gooblin/commands',
   'plugins/gooblin/docs',

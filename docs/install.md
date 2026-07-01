@@ -39,9 +39,47 @@ The repository includes:
 - `commands/`
 - `hooks/`
 
+## npx Skill-Pack Installer
+
+Use this path when a host does not support plugin installation but can run npm packages from GitHub.
+
+```bash
+npx github:jsleemaster/gooblin install
+```
+
+The installer copies a readable skill pack into `.gooblin/` in the current working directory. It copies:
+
+- `AGENTS.md`
+- `README.md`
+- `skills/`
+- `commands/`
+- `docs/`
+- `adapters/`
+
+It does not enable hooks, edit host settings, access the network, collect telemetry, or mutate files outside `.gooblin/`.
+
+Useful commands:
+
+```bash
+npx github:jsleemaster/gooblin install --dry-run
+npx github:jsleemaster/gooblin install --target /path/to/project
+npx github:jsleemaster/gooblin status
+npx github:jsleemaster/gooblin uninstall
+```
+
+Use `--force` only when intentionally replacing or removing an existing `.gooblin/` directory.
+
+After the npm package is published and verified, the registry shorthand will be:
+
+```bash
+npx gooblin install
+```
+
+Do not describe the npm registry shorthand as verified until the `gooblin` package is actually published and checked.
+
 ## Verified Local Installer Path
 
-The current release verifies local install behavior with:
+The latest plugin installer verification remains:
 
 - Claude Code `2.1.96`.
 - Codex CLI `0.141.0`.
@@ -142,11 +180,19 @@ If your agent asks whether to trust hooks, you can decline and still use Gooblin
 
 ### Node not found
 
-Hooks use tiny dependency-free Node.js scripts. If Node is unavailable, disable hooks and use manual mode. The skills remain readable Markdown.
+Hooks and the optional npx installer use dependency-free Node.js scripts. If Node is unavailable, disable hooks and use manual mode. The skills remain readable Markdown.
 
 ### Plugin command unavailable
 
-Your agent may not support plugin installation yet, or the command may differ. Use manual installation and reference `AGENTS.md`, `skills/`, and `commands/`.
+Your agent may not support plugin installation yet, or the command may differ. Use the npx skill-pack installer or manual installation and reference `AGENTS.md`, `skills/`, and `commands/`.
+
+### npx package not found
+
+Use the GitHub-source command until the npm registry package is published and verified:
+
+```bash
+npx github:jsleemaster/gooblin install
+```
 
 ### Hooks not trusted
 
@@ -154,8 +200,10 @@ Decline hook execution if you are unsure. Gooblin hooks are optional; they only 
 
 ### Agent does not support plugins
 
-Use the manual fallback path. Gooblin is designed to stay useful even when no plugin system is available.
+Use the npx skill-pack installer or the manual fallback path. Gooblin is designed to stay useful even when no plugin system is available.
 
 ## Safety Summary
 
 Gooblin hooks are reminder-only. They do not access the network, collect telemetry, run dangerous commands, or mutate user files automatically.
+
+The npx installer is also local-only. It writes only `.gooblin/` in the target project unless you explicitly choose another target path.

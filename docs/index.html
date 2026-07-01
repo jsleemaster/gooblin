@@ -120,7 +120,7 @@
     <section id="install">
       <div class="wrap">
         <h2>Install</h2>
-        <p>Gooblin is agent-agnostic. Use the path your agent actually supports: plugin marketplace, direct skill-pack reference, or manual Markdown mode.</p>
+        <p>Gooblin is agent-agnostic. Use the path your agent actually supports: plugin marketplace, npx skill-pack copy, direct skill-pack reference, or manual Markdown mode.</p>
         <div class="install-grid">
           <article class="install-card">
             <span class="status">Plugin path</span>
@@ -149,11 +149,13 @@ adapters/</code></pre>
         </div>
         <div class="install-grid">
           <article class="install-card">
-            <span class="status">Not claimed yet</span>
+            <span class="status">GitHub-source npx</span>
             <h3>NPM / npx</h3>
-            <p>An npx command is normally a tiny installer that copies or links skill files. Gooblin does not claim a supported npx installer until a release exposes and verifies one.</p>
-            <pre><code># Not a supported Gooblin command yet
-npx gooblin</code></pre>
+            <p>Copies Gooblin into <code>.gooblin/</code> as a readable skill pack. The npm registry shorthand follows after package publish.</p>
+            <pre><code>npx github:jsleemaster/gooblin install
+
+# after npm publish:
+npx gooblin install</code></pre>
           </article>
           <article class="install-card">
             <span class="status">Adapter path</span>
