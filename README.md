@@ -190,6 +190,8 @@ These examples are not benchmarks.
 
 No benchmark claims yet.
 
+Early pilot signal: Gooblin scored +4 on the architecture/scope-risk task in a 4-task GitHub Models pilot, improving scope control, dependency discipline, debugging discipline, and verification quality. It tied baseline on three already-scoped review/planning tasks.
+
 Gooblin will not claim "less code," "faster," "cheaper," or "safer" until measured on real agentic coding sessions.
 
 Planned measurements:
