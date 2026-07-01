@@ -38,7 +38,7 @@ GitHub-source npx skill-pack copy:
 npx github:jsleemaster/gooblin status
 ```
 
-Global package metadata, if installed locally with npm after package publish:
+Global package metadata, after npm registry publish is completed and verified in [issue #43](https://github.com/jsleemaster/gooblin/issues/43):
 
 ```bash
 npm list -g gooblin --depth=0
@@ -98,7 +98,7 @@ GitHub-source npx skill-pack copy:
 npx github:jsleemaster/gooblin uninstall
 ```
 
-Global package metadata, if installed locally with npm after package publish:
+Global package metadata, after npm registry publish is completed and verified:
 
 ```bash
 npm uninstall -g gooblin

@@ -48,6 +48,16 @@ Expected result:
 
 This path should be rechecked on a writable machine before describing it as locally verified in release marketing.
 
+## npm Registry Status
+
+The npm registry shorthand is pending publication and verification:
+
+```bash
+npx gooblin install
+```
+
+Track that work in [issue #43](https://github.com/jsleemaster/gooblin/issues/43). Do not move this command into a verified section until the package exists on npm and the command has been checked.
+
 ## Intended Remote Commands
 
 After a release is published:
