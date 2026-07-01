@@ -1,0 +1,32 @@
+name: Gooblin Benchmark Pilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: GitHub Models model id
+        required: false
+        default: openai/gpt-4.1
+
+permissions:
+  contents: read
+  models: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Gooblin benchmark pilot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODEL: ${{ inputs.model }}
+        run: node scripts/run-benchmark-pilot.mjs
+
+      - name: Upload benchmark output
+        uses: actions/upload-artifact@v4
+        with:
+          name: gooblin-benchmark-pilot
+          path: benchmark-output
