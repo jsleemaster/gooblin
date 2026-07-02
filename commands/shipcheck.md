@@ -28,7 +28,9 @@ Respond in the user's language by default. Keep code, commands, file paths, API 
 ## Shipcheck
 
 Scope:
+Intent checked:
 Evidence checked:
+Gaps or unverified risk:
 
 ### Findings
 
@@ -42,12 +44,23 @@ Evidence checked:
 ### Reproduce or bound bugs
 ### Defer optional scope
 ### Safety floor
+### Intent vs implementation
+
+- Intended behavior:
+- Implementation evidence:
+- Gap:
+
 ### Verification
+
+- Existing verification:
+- Proposed verification:
+- Unverified risk:
+
 ### Verdict
 ```
 
 ## Example Invocation
 
 ```text
-/shipcheck Review this branch diff before I ship it. Return numbered findings first, then cover unnecessary code, speculative architecture, debugging gaps, optional scope, safety, and verification.
+/shipcheck Review this branch diff before I ship it. Return numbered findings first, then cover unnecessary code, speculative architecture, debugging gaps, optional scope, safety, intent vs implementation, and verification.
 ```
