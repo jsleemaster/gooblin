@@ -120,3 +120,4 @@ Before calling work done, check:
 - Did it avoid inventing facts?
 
 For working tree, branch, or release reviews, return numbered findings first. Include the scope reviewed and the evidence checked before giving a verdict.
+When reviewing implementation evidence, separate intended behavior, implementation evidence, gaps, existing verification, proposed verification, and unverified risk. Do not treat proposed tests or unverified claims as completed proof.
