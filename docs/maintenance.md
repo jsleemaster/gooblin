@@ -6,6 +6,8 @@ This is a checklist, not a process framework. Keep it small and update it when a
 
 ## Change Impact Matrix
 
+Use this matrix as the copy-sync map. When a public behavior changes, update the smallest set of affected surfaces rather than adding a new process or parallel source of truth.
+
 | Change | Check these surfaces |
 | --- | --- |
 | Skill behavior or skill wording | `skills/`, `commands/`, `README.md`, `examples/`, `evals/rubric.md`, `evals/fixtures/` |
@@ -31,9 +33,11 @@ npm pack --dry-run
 
 For release PRs, also verify at least the current local plugin install paths documented in `docs/verified-install-paths.md`.
 
+The validation workflow should stay tiny: checkout, Node, `npm run validate`. Do not add dependency installs, generated reports, or release automation unless a real failing PR shows the need.
+
 ## What Not To Add
 
-- No CI just to mirror local validation until it has clear value.
+- No heavy CI beyond the lightweight validation gate.
 - No generated docs index unless manual drift becomes common.
 - No benchmark numbers without method, task set, sample size, limitations, and reproduction instructions.
 - No official host support claims unless the specific installer path has been verified against the released repository.
