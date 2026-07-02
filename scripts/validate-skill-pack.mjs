@@ -30,6 +30,9 @@ for (const command of ['gooblin', 'clip', 'ground', 'duck', 'yak', 'shipcheck'])
   const file = `commands/${command}.md`;
   assert(fs.existsSync(file), `${file} must exist`);
   const text = fs.readFileSync(file, 'utf8');
+  const frontmatter = text.match(/^---\n([\s\S]*?)\n---\n/);
+  assert(frontmatter, `${file} must have YAML frontmatter`);
+  assert(frontmatter[1].split('\n').some((line) => line.startsWith('description: ')), `${file} frontmatter must include description`);
   assert(text.includes(`# /${command}`), `${file} must document /${command}`);
 }
 
@@ -43,7 +46,16 @@ for (const phrase of [
 }
 
 const shipcheck = fs.readFileSync('commands/shipcheck.md', 'utf8');
-for (const phrase of ['Working tree review', 'Branch review', 'Release review', 'numbered findings']) {
+for (const phrase of [
+  'Working tree review',
+  'Branch review',
+  'Release review',
+  'numbered findings',
+  'Intent checked',
+  'Intent vs implementation',
+  'Implementation evidence',
+  'Unverified risk',
+]) {
   assert(shipcheck.includes(phrase), `commands/shipcheck.md missing: ${phrase}`);
 }
 
