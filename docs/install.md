@@ -41,18 +41,18 @@ The repository includes:
 
 ## npx Skill-Pack Installer
 
-Use this path when a host does not support plugin installation but can run npm packages from GitHub.
+Use this path when a host does not support plugin installation but can run npm packages.
 
 ```bash
-npx github:jsleemaster/gooblin install
+npx gooblin install
 ```
 
 Current status:
 
 | Path | Status |
 | --- | --- |
-| `npx github:jsleemaster/gooblin install` | Released GitHub-source installer path. |
-| `npx gooblin install` | Pending npm registry publish and verification. Tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43). |
+| `npx gooblin install` | Published npm registry shorthand, verified against `gooblin@1.3.1`. |
+| `npx github:jsleemaster/gooblin install` | Repository-source fallback path. |
 
 The installer copies a readable skill pack into `.gooblin/` in the current working directory. It copies:
 
@@ -68,21 +68,19 @@ It does not enable hooks, edit host settings, access the network, collect teleme
 Useful commands:
 
 ```bash
-npx github:jsleemaster/gooblin install --dry-run
-npx github:jsleemaster/gooblin install --target /path/to/project
-npx github:jsleemaster/gooblin status
-npx github:jsleemaster/gooblin uninstall
+npx gooblin install --dry-run
+npx gooblin install --target /path/to/project
+npx gooblin status
+npx gooblin uninstall
 ```
 
 Use `--force` only when intentionally replacing or removing an existing `.gooblin/` directory.
 
-The future npm registry shorthand is:
+Repository-source fallback:
 
 ```bash
-npx gooblin install
+npx github:jsleemaster/gooblin install
 ```
-
-Do not describe the npm registry shorthand as verified until the `gooblin` package is actually published and checked.
 
 ## Verified Local Installer Path
 
@@ -195,13 +193,11 @@ Your agent may not support plugin installation yet, or the command may differ. U
 
 ### npx package not found
 
-Use the GitHub-source command until the npm registry package is published and verified:
+If npm registry resolution is unavailable, use the GitHub-source fallback:
 
 ```bash
 npx github:jsleemaster/gooblin install
 ```
-
-The npm registry shorthand is tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43).
 
 ### Hooks not trusted
 

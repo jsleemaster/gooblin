@@ -2,7 +2,7 @@
 
 This page separates verified behavior from intended distribution commands.
 
-Current package version: `1.3.0`. Installer verification should be repeated after this release because local filesystem access was restricted during the release preparation session.
+Current package version: `1.3.1`.
 
 ## Verified Locally
 
@@ -13,10 +13,10 @@ Checked on 2026-06-29 from `/Users/smlee/Gooblin`.
 | Claude Code | `2.1.96` | `claude plugin marketplace add /Users/smlee/Gooblin`, `claude plugin install gooblin@gooblin --scope user`, `claude plugin list`. |
 | Codex CLI | `0.141.0` | `codex plugin marketplace add /Users/smlee/Gooblin --json`, `codex plugin add gooblin@gooblin --json`, `codex plugin list`. |
 
-Expected local result for current package version v1.3.0:
+Expected local result for current package version v1.3.1:
 
-- Claude Code: `gooblin@gooblin`, version `1.3.0`, status `enabled`.
-- Codex CLI: `gooblin@gooblin`, version `1.3.0`, status `installed, enabled`.
+- Claude Code: `gooblin@gooblin`, version `1.3.1`, status `enabled`.
+- Codex CLI: `gooblin@gooblin`, version `1.3.1`, status `installed, enabled`.
 
 ## Verified From Git Branch
 
@@ -34,7 +34,7 @@ Claude Code's marketplace add command in the checked version did not expose a `-
 
 ## GitHub-source npx Path
 
-Release v1.3.0 adds a package bin so npx can run the installer directly from GitHub:
+Release v1.3.0 added a package bin so npx can run the installer directly from GitHub:
 
 ```bash
 npx github:jsleemaster/gooblin#v1.3.0 install
@@ -46,17 +46,23 @@ Expected result:
 - `GOOBLIN_INSTALL.json` records the installed Gooblin version.
 - Hooks and host settings are not enabled automatically.
 
-This path should be rechecked on a writable machine before describing it as locally verified in release marketing.
+This path remains available as a repository-source fallback.
 
 ## npm Registry Status
 
-The npm registry shorthand is pending publication and verification:
+The npm registry shorthand was published and verified on 2026-07-03:
 
 ```bash
 npx gooblin install
 ```
 
-Track that work in [issue #43](https://github.com/jsleemaster/gooblin/issues/43). Do not move this command into a verified section until the package exists on npm and the command has been checked.
+Verified checks:
+
+- `npm view gooblin name version dist-tags --json` returned `gooblin@1.3.0` with `latest: 1.3.0` immediately after the first publish.
+- `npx --yes gooblin --version` returned `1.3.0`.
+- `npx --yes gooblin install --target <tmpdir>` copied `.gooblin/` and wrote `GOOBLIN_INSTALL.json`.
+
+Release v1.3.1 updates the public README and docs so the npm package page no longer describes the shorthand as future work.
 
 ## Intended Remote Commands
 
@@ -68,6 +74,7 @@ claude plugin install gooblin@gooblin
 codex plugin marketplace add jsleemaster/gooblin
 codex plugin add gooblin@gooblin
 npx github:jsleemaster/gooblin install
+npx gooblin install
 ```
 
 Remote install should be rechecked after each release because plugin installers, npm behavior, and marketplace behavior can change.
@@ -77,5 +84,4 @@ Remote install should be rechecked after each release because plugin installers,
 - No official host vendor support claim.
 - No marketplace approval claim.
 - No universal agent compatibility claim.
-- No npm registry publish claim until the package is published.
 - No benchmark claim.

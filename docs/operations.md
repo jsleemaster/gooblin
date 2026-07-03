@@ -15,7 +15,7 @@ codex plugin list
 Expected shape when installed:
 
 ```text
-gooblin@gooblin  installed, enabled  1.3.0
+gooblin@gooblin  installed, enabled  1.3.1
 ```
 
 Claude Code:
@@ -28,17 +28,17 @@ Expected shape when installed:
 
 ```text
 gooblin@gooblin
-Version: 1.3.0
+Version: 1.3.1
 Status: enabled
 ```
 
-GitHub-source npx skill-pack copy:
+npx skill-pack copy:
 
 ```bash
-npx github:jsleemaster/gooblin status
+npx gooblin status
 ```
 
-Global package metadata, after npm registry publish is completed and verified in [issue #43](https://github.com/jsleemaster/gooblin/issues/43):
+Global package metadata:
 
 ```bash
 npm list -g gooblin --depth=0
@@ -92,13 +92,13 @@ claude plugin uninstall gooblin
 claude plugin marketplace remove gooblin
 ```
 
-GitHub-source npx skill-pack copy:
+npx skill-pack copy:
 
 ```bash
-npx github:jsleemaster/gooblin uninstall
+npx gooblin uninstall
 ```
 
-Global package metadata, after npm registry publish is completed and verified:
+Global package metadata:
 
 ```bash
 npm uninstall -g gooblin
