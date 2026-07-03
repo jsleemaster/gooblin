@@ -2,7 +2,7 @@
 
 These notes record what has actually been checked. They are not marketplace approval claims.
 
-Current package version: `1.3.0`. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
+Current package version: `1.3.1`. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
 
 ## Latest Local Verification
 
@@ -38,18 +38,18 @@ Result: `gooblin@gooblin` installed with version `1.2.0` and status `installed, 
 
 ## npx Installer Status
 
-Release `v1.3.0` exposes a minimal dependency-free bin installer:
+Release `v1.3.1` verifies the npm registry shorthand for the minimal dependency-free bin installer:
 
 ```bash
-npx github:jsleemaster/gooblin install
+npx gooblin install
 ```
 
 The installer copies readable Gooblin files into `.gooblin/` and does not enable hooks, edit host settings, access the network, or collect telemetry.
 
-The npm registry shorthand is tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43) and is not claimed as verified until the package is published and checked:
+Repository-source fallback remains available:
 
 ```bash
-npx gooblin install
+npx github:jsleemaster/gooblin install
 ```
 
 ## Remote Install Status

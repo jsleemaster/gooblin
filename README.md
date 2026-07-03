@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 1.3.0" src="https://img.shields.io/badge/version-1.3.0-111111">
+  <img alt="version 1.3.1" src="https://img.shields.io/badge/version-1.3.1-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -136,18 +136,18 @@ You can also open `/plugins`, select the Gooblin marketplace, install Gooblin, r
 For agents without plugin marketplace support, npx can copy Gooblin into the current repo as a readable skill pack:
 
 ```bash
-npx github:jsleemaster/gooblin install
+npx gooblin install
 ```
 
 Current status:
 
-- GitHub-source npx is the released path.
-- npm registry shorthand is tracked in [issue #43](https://github.com/jsleemaster/gooblin/issues/43) and is not published or verified yet.
+- npm registry shorthand is published and verified for `gooblin@1.3.1`.
+- GitHub-source npx remains available for users who prefer installing directly from the repository.
 
-The future registry shorthand is:
+Repository-source fallback:
 
 ```bash
-npx gooblin install
+npx github:jsleemaster/gooblin install
 ```
 
 The installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, `status`, and `uninstall` for safe operation.
