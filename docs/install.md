@@ -74,7 +74,7 @@ npx gooblin status
 npx gooblin uninstall
 ```
 
-Use `--force` only when intentionally replacing or removing an existing `.gooblin/` directory.
+Temporary safety guard: `install --force` and `uninstall` currently refuse to change an existing `.gooblin/` directory. The current marker cannot distinguish installed files from consumer-owned additions or edits, so automatic replacement and removal stay disabled until the ownership-manifest work in [#49](https://github.com/jsleemaster/gooblin/issues/49) is complete. Back up and review the directory manually if removal is required.
 
 Repository-source fallback:
 
@@ -211,4 +211,4 @@ Use the npx skill-pack installer or the manual fallback path. Gooblin is designe
 
 Gooblin hooks are reminder-only. They do not access the network, collect telemetry, run dangerous commands, or mutate user files automatically.
 
-The npx installer is also local-only. It writes only `.gooblin/` in the target project unless you explicitly choose another target path.
+The npx installer is also local-only. A fresh install writes only `.gooblin/` in the target project unless you explicitly choose another target path. Existing copies are not automatically replaced or removed while file ownership cannot be verified.
