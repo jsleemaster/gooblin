@@ -98,6 +98,8 @@ npx skill-pack copy:
 npx gooblin uninstall
 ```
 
+This command currently refuses automatic removal and leaves `.gooblin/` unchanged. Until [ownership tracking](https://github.com/jsleemaster/gooblin/issues/49) is available, back up the directory, inspect consumer-added or modified files, and remove only the files you have confirmed are disposable.
+
 Global package metadata:
 
 ```bash
@@ -130,7 +132,7 @@ If plugin installation breaks, remove the plugin and marketplace entry, then use
 Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
 
-If an npx copy breaks, remove `.gooblin/` with the npx `uninstall` command or by deleting that directory manually after confirming it contains only Gooblin files.
+If an npx copy breaks, first back up `.gooblin/`, then inspect it for consumer-added or modified files. The current `uninstall` command intentionally refuses automatic deletion; remove files manually only after confirming they are disposable.
 
 If a host-specific statusline setting breaks, remove that host setting. Gooblin does not currently create statusline files or mutate host settings automatically.
 
