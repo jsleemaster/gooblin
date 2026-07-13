@@ -2,7 +2,7 @@
 
 These notes record what has actually been checked. They are not marketplace approval claims.
 
-Current package version: `1.3.1`. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
+Current source package version: `1.3.2`. npm `latest` remains `1.3.1` until the safety release is published and verified. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
 
 ## Latest Local Verification
 
@@ -38,7 +38,7 @@ Result: `gooblin@gooblin` installed with version `1.2.0` and status `installed, 
 
 ## npx Installer Status
 
-Release `v1.3.1` verifies the npm registry shorthand for the minimal dependency-free bin installer:
+Published npm `v1.3.1` remains the latest registry version during 1.3.2 release preparation. Its previously verified fresh-copy command is:
 
 ```bash
 npx gooblin install
@@ -46,7 +46,7 @@ npx gooblin install
 
 The installer copies readable Gooblin files into `.gooblin/` and does not enable hooks, edit host settings, access the network, or collect telemetry.
 
-Safety boundary: published npm 1.3.1 predates the destructive-operation refusal guard. Its fresh-copy path is available, but do not run `install --force` or `uninstall` from that registry package. The repository-source installer contains the guard; #57 stays open until a fixed npm version is published and verified.
+Safety boundary: published npm 1.3.1 predates the destructive-operation refusal guard. Its fresh-copy path is available, but do not run `install --force` or `uninstall` from that registry package. The repository-source 1.3.2 release candidate contains the guard; #57 stays open until 1.3.2 is published and verified.
 
 Repository-source fallback remains available:
 
