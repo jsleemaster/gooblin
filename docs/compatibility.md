@@ -43,7 +43,7 @@ CODEX_HOME=<temporary-config-dir> \
 
 Result: `gooblin@gooblin` installed with version `1.3.2` and status `installed, enabled`.
 
-The temporary configuration roots were removed after verification. The ordinary user installations remained unchanged at Claude Code Gooblin `1.2.0` and Codex CLI Gooblin `1.3.1`.
+The temporary configuration roots were removed after verification. Immediately before and after that isolated run, the ordinary user installations were unchanged at Claude Code Gooblin `1.2.0` and Codex CLI Gooblin `1.3.1`. A later 2026-07-13 recheck reported Codex Gooblin `1.3.2` while Claude remained at `1.2.0`; these values are therefore time-scoped observations, not an invariant of marketplace refresh behavior.
 
 ## npx Installer Status
 

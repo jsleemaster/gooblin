@@ -15,7 +15,7 @@ Checked on 2026-07-13 against remote `main` commit `553adf31d48daf6449dd57ca94ac
 
 Both checks used temporary isolated configuration roots through `CLAUDE_CONFIG_DIR` and `CODEX_HOME`, plus an isolated `HOME`, `TMPDIR`, and XDG directories. The temporary roots were removed after verification.
 
-The ordinary user installations were checked before and after the isolated run and remained unchanged: Claude Code retained Gooblin `1.2.0`, and Codex CLI retained Gooblin `1.3.1`.
+Immediately before and after the isolated run, the ordinary user installations were unchanged: Claude Code reported Gooblin `1.2.0`, and Codex CLI reported Gooblin `1.3.1`. A later 2026-07-13 recheck reported Codex Gooblin `1.3.2` while Claude remained at `1.2.0`, so these ordinary-install versions are time-scoped observations rather than a promise that Git marketplace state stays fixed.
 
 The earlier 2026-06-29 local-checkout verification used Claude Code `2.1.96` and Codex CLI `0.141.0`; both installed and enabled Gooblin `1.2.0`.
 
@@ -31,7 +31,7 @@ codex plugin list
 
 Result: `gooblin@gooblin`, version `1.2.0`, status `installed, enabled`.
 
-Claude Code's marketplace add command in the checked version did not expose a `--ref` option, so Claude remote verification should be repeated after the release is published on `main`.
+Claude Code's marketplace add command in the checked version did not expose a `--ref` option. The current GitHub `main` verification is recorded in the latest local verification above and used the command's default branch behavior.
 
 ## GitHub-source npx Path
 
