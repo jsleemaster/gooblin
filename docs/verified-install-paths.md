@@ -46,7 +46,7 @@ Expected result:
 - `GOOBLIN_INSTALL.json` records the installed Gooblin version.
 - Hooks and host settings are not enabled automatically.
 
-This path remains available as a repository-source fallback.
+This tagged v1.3.0 command is retained as historical verification evidence, not as a recommended lifecycle path: v1.3.0 predates the destructive-operation refusal guard. Use the current repository source for the guarded behavior.
 
 ## npm Registry Status
 
@@ -63,6 +63,8 @@ Verified checks:
 - `npx --yes gooblin install --target <tmpdir>` copied `.gooblin/` and wrote `GOOBLIN_INSTALL.json`.
 
 Release v1.3.1 updates the public README and docs so the npm package page no longer describes the shorthand as future work.
+
+Safety boundary: npm 1.3.1 can perform recursive replacement/removal because it predates the refusal guard. Its fresh-install check above does not verify safe update or uninstall behavior. Do not run `npx gooblin install --force` or `npx gooblin uninstall` until #57 publishes and verifies a fixed registry version.
 
 ## Intended Remote Commands
 
