@@ -20,11 +20,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Check diff whitespace
+        if: matrix.node-version == 24
+        run: git diff --check HEAD^ HEAD
 
       - name: Run validation
         run: npm run validate
