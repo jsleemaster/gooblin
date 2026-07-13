@@ -6,17 +6,18 @@ Current source package version: `1.3.2`. Registry state can change independently
 
 ## Verified Locally
 
-Checked on 2026-06-29 from `/Users/smlee/Gooblin`.
+Checked on 2026-07-13 against remote `main` commit `553adf31d48daf6449dd57ca94ac4a1df32e2499`.
 
-| Host | Version | Verified command path |
-| --- | --- | --- |
-| Claude Code | `2.1.96` | `claude plugin marketplace add /Users/smlee/Gooblin`, `claude plugin install gooblin@gooblin --scope user`, `claude plugin list`. |
-| Codex CLI | `0.141.0` | `codex plugin marketplace add /Users/smlee/Gooblin --json`, `codex plugin add gooblin@gooblin --json`, `codex plugin list`. |
+| Host | Version | Verified command path | Result |
+| --- | --- | --- | --- |
+| Claude Code | `2.1.96` | `claude plugin marketplace add jsleemaster/gooblin --scope user`, `claude plugin install gooblin@gooblin --scope user`, `claude plugin list --json`. | `gooblin@gooblin` version `1.3.2`, enabled. |
+| Codex CLI | `0.144.1` | `codex plugin marketplace add jsleemaster/gooblin --ref main --json`, `codex plugin add gooblin@gooblin --json`, `codex plugin list --marketplace gooblin --json`. | `gooblin@gooblin` version `1.3.2`, installed and enabled. |
 
-Expected local result for source package version v1.3.2:
+Both checks used temporary isolated configuration roots through `CLAUDE_CONFIG_DIR` and `CODEX_HOME`, plus an isolated `HOME`, `TMPDIR`, and XDG directories. The temporary roots were removed after verification.
 
-- Claude Code: `gooblin@gooblin`, version `1.3.2`, status `enabled`.
-- Codex CLI: `gooblin@gooblin`, version `1.3.2`, status `installed, enabled`.
+The ordinary user installations were checked before and after the isolated run and remained unchanged: Claude Code retained Gooblin `1.2.0`, and Codex CLI retained Gooblin `1.3.1`.
+
+The earlier 2026-06-29 local-checkout verification used Claude Code `2.1.96` and Codex CLI `0.141.0`; both installed and enabled Gooblin `1.2.0`.
 
 ## Verified From Git Branch
 

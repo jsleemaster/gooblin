@@ -2,39 +2,48 @@
 
 These notes record what has actually been checked. They are not marketplace approval claims.
 
-Current source package version: `1.3.2`. Registry state must be checked separately with `npm view gooblin version dist-tags --json`; version 1.3.1 lacks the destructive-operation guard and version 1.3.2 includes it. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
+Current source package version: `1.3.2`. Registry state must be checked separately with `npm view gooblin version dist-tags --json`; version 1.3.1 lacks the destructive-operation guard and version 1.3.2 includes it.
 
 ## Latest Local Verification
 
-Checked on 2026-06-29.
+Checked on 2026-07-13 against remote `main` commit `553adf31d48daf6449dd57ca94ac4a1df32e2499` with isolated temporary host configuration roots.
 
-| Host | Local version | Verified result |
+| Host | Host version | Verified result |
 | --- | --- | --- |
-| Claude Code | `2.1.96` | `gooblin@gooblin` version `1.2.0` installed and enabled from a local checkout. |
-| Codex CLI | `codex-cli 0.141.0` | `gooblin@gooblin` version `1.2.0` installed and enabled from a local checkout. |
+| Claude Code | `2.1.96` | `gooblin@gooblin` version `1.3.2` installed and enabled from GitHub `main`. |
+| Codex CLI | `codex-cli 0.144.1` | `gooblin@gooblin` version `1.3.2` installed and enabled from GitHub `main`. |
 
 ## Verified Commands
+
+Each run also used temporary `HOME`, `TMPDIR`, and XDG directories. The host-specific configuration roots are shown below.
 
 Claude Code:
 
 ```bash
-claude plugin validate .
-claude plugin marketplace add /Users/smlee/Gooblin
-claude plugin install gooblin@gooblin --scope user
-claude plugin list
+CLAUDE_CONFIG_DIR=<temporary-config-dir> \
+  claude plugin marketplace add jsleemaster/gooblin --scope user
+CLAUDE_CONFIG_DIR=<temporary-config-dir> \
+  claude plugin install gooblin@gooblin --scope user
+CLAUDE_CONFIG_DIR=<temporary-config-dir> \
+  claude plugin list --json
 ```
 
-Result: `gooblin@gooblin` installed with version `1.2.0` and status `enabled`.
+Result: `gooblin@gooblin` installed with version `1.3.2` and status `enabled`.
 
 Codex:
 
 ```bash
-codex plugin marketplace add /Users/smlee/Gooblin --json
-codex plugin add gooblin@gooblin --json
-codex plugin list
+CODEX_HOME=<temporary-config-dir> \
+  codex plugin marketplace add jsleemaster/gooblin --ref main --json
+CODEX_HOME=<temporary-config-dir> \
+  codex plugin add gooblin@gooblin --json
+CODEX_HOME=<temporary-config-dir> \
+  codex plugin list --marketplace gooblin --json
 ```
 
-Result: `gooblin@gooblin` installed with version `1.2.0` and status `installed, enabled`.
+Result: `gooblin@gooblin` installed with version `1.3.2` and status `installed, enabled`.
+
+The temporary configuration roots were removed after verification. The ordinary user installations remained unchanged at Claude Code Gooblin `1.2.0` and Codex CLI Gooblin `1.3.1`.
 
 ## npx Installer Status
 
