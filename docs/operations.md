@@ -98,7 +98,7 @@ npx skill-pack copy:
 npx gooblin uninstall
 ```
 
-The 1.3.2 source release candidate refuses automatic removal and leaves `.gooblin/` unchanged. Published npm 1.3.1 predates this guard and can recursively delete the directory, so do **not** run the 1.3.1 registry-package uninstall command. Back up the directory, inspect consumer-added or modified files, and remove only files you have confirmed are disposable. Publishing and verifying 1.3.2 is tracked in [#57](https://github.com/jsleemaster/gooblin/issues/57); ownership-aware uninstall is tracked in [#49](https://github.com/jsleemaster/gooblin/issues/49).
+Version 1.3.2 and newer refuse automatic removal and leave `.gooblin/` unchanged. Version 1.3.1 predates this guard and can recursively delete the directory, so do **not** run its uninstall command. Confirm the resolved registry version with `npx --yes gooblin --version`, back up the directory, and inspect consumer-added or modified files. Ownership-aware uninstall is tracked in [#49](https://github.com/jsleemaster/gooblin/issues/49).
 
 Global package metadata:
 
@@ -132,7 +132,7 @@ If plugin installation breaks, remove the plugin and marketplace entry, then use
 Use /gooblin for this task. Diagnose the task type first, then route to the smallest useful teammate set.
 ```
 
-If an npx copy breaks, first back up `.gooblin/`, then inspect it for consumer-added or modified files. The repository-source 1.3.2 `uninstall` command intentionally refuses automatic deletion. Published npm 1.3.1 does not contain that refusal, so do not use its uninstall path; remove files manually only after confirming they are disposable.
+If an npx copy breaks, first back up `.gooblin/`, then inspect it for consumer-added or modified files. Version 1.3.2 and newer intentionally refuse automatic deletion. Version 1.3.1 does not contain that refusal, so do not use its uninstall path; remove files manually only after confirming they are disposable.
 
 If a host-specific statusline setting breaks, remove that host setting. Gooblin does not currently create statusline files or mutate host settings automatically.
 
