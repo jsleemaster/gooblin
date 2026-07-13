@@ -150,7 +150,7 @@ Repository-source fallback:
 npx github:jsleemaster/gooblin install
 ```
 
-The installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, `status`, and `uninstall` for safe operation.
+The installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), existing `.gooblin/` directories are not replaced or removed automatically: `--force` replacement and `uninstall` fail safely so consumer-owned files cannot be deleted.
 
 ### Manual fallback
 
