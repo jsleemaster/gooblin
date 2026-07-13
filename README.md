@@ -141,8 +141,8 @@ npx gooblin install
 
 Current status:
 
-- npm registry shorthand is published and verified for `gooblin@1.3.1`.
-- GitHub-source npx remains available for users who prefer installing directly from the repository.
+- npm registry shorthand `gooblin@1.3.1` is published, but its destructive lifecycle commands are unsafe: it predates the refusal guard in this repository. Until a fixed version is published, do not run `npx gooblin install --force` or `npx gooblin uninstall` from the registry package.
+- The GitHub-source installer contains the refusal guard and remains available for users who need the source version.
 
 Repository-source fallback:
 
@@ -150,7 +150,7 @@ Repository-source fallback:
 npx github:jsleemaster/gooblin install
 ```
 
-The installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), existing `.gooblin/` directories are not replaced or removed automatically: `--force` replacement and `uninstall` fail safely so consumer-owned files cannot be deleted.
+The source installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), this source version refuses `--force` replacement and `uninstall`. The published npm 1.3.1 package does **not** contain that guard; [#57](https://github.com/jsleemaster/gooblin/issues/57) remains open until a fixed registry version is published and verified.
 
 ### Manual fallback
 
