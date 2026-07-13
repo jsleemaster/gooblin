@@ -141,8 +141,8 @@ npx gooblin install
 
 Current status:
 
-- Source package version `gooblin@1.3.2` is the safety release candidate and contains the destructive-operation refusal guard.
-- npm registry `latest` remains `1.3.1` until 1.3.2 is published and verified. Do not run `npx gooblin install --force` or `npx gooblin uninstall` from the 1.3.1 registry package.
+- Source package version `gooblin@1.3.2` contains the destructive-operation refusal guard.
+- Before using registry lifecycle commands, run `npx --yes gooblin --version`. Version 1.3.1 does not contain the guard; use those commands only after the resolved version is 1.3.2 or newer.
 
 Repository-source fallback:
 
@@ -150,7 +150,7 @@ Repository-source fallback:
 npx github:jsleemaster/gooblin install
 ```
 
-The 1.3.2 source installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), this source version refuses `--force` replacement and `uninstall`. Published npm 1.3.1 does **not** contain that guard; [#57](https://github.com/jsleemaster/gooblin/issues/57) remains open until 1.3.2 is published and verified.
+The 1.3.2 source installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), version 1.3.2 and newer refuse `--force` replacement and `uninstall`. Version 1.3.1 does **not** contain that guard; verify the resolved version before using registry lifecycle commands.
 
 ### Manual fallback
 
