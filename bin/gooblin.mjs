@@ -26,7 +26,8 @@ npx examples:
   npx github:jsleemaster/gooblin status
 
 Install copies a readable Gooblin skill pack into .gooblin/.
-It does not enable hooks, edit host settings, access the network, or collect telemetry.`;
+It does not enable hooks, edit host settings, access the network, or collect telemetry.
+Until owned-file tracking is available, existing copies are never replaced or removed automatically.`;
 }
 
 function parseArgs(argv) {
@@ -101,8 +102,16 @@ async function install(options) {
   const markerPath = markerPathFor(options.target);
   const alreadyInstalled = await pathExists(installRoot);
 
-  if (alreadyInstalled && !options.force) {
-    throw new Error(`${installRoot} already exists. Use --force to replace it.`);
+  if (alreadyInstalled) {
+    if (options.dryRun) {
+      console.log(`Would leave existing Gooblin files unchanged in ${installRoot}`);
+      console.log('Automatic replacement is disabled until owned-file tracking is available.');
+      return;
+    }
+
+    throw new Error(
+      `Refusing to replace ${installRoot} automatically because installed and consumer-owned files cannot be distinguished yet. Back up and review the directory manually.`,
+    );
   }
 
   if (options.dryRun) {
@@ -111,10 +120,6 @@ async function install(options) {
       console.log(`Would copy ${entry}`);
     }
     return;
-  }
-
-  if (alreadyInstalled) {
-    await fs.rm(installRoot, { recursive: true, force: true });
   }
 
   await fs.mkdir(installRoot, { recursive: true });
@@ -169,17 +174,21 @@ async function uninstall(options) {
     return;
   }
 
-  if (!(await pathExists(markerPath)) && !options.force) {
-    throw new Error(`Refusing to remove ${installRoot} because ${markerName} is missing. Use --force only if this is intentional.`);
-  }
+  const hasMarker = await pathExists(markerPath);
 
   if (options.dryRun) {
-    console.log(`Would remove ${installRoot}`);
+    console.log(`Would leave existing Gooblin files unchanged in ${installRoot}`);
+    console.log('Automatic uninstall is disabled until owned-file tracking is available.');
     return;
   }
 
-  await fs.rm(installRoot, { recursive: true, force: true });
-  console.log(`Removed ${installRoot}`);
+  const reason = hasMarker
+    ? 'installed and consumer-owned files cannot be distinguished yet'
+    : `${markerName} is missing and file ownership cannot be verified`;
+
+  throw new Error(
+    `Refusing to remove ${installRoot} automatically because ${reason}. Back up and review the directory manually.`,
+  );
 }
 
 async function main() {

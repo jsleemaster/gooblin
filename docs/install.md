@@ -51,8 +51,8 @@ Current status:
 
 | Path | Status |
 | --- | --- |
-| `npx gooblin install` | Published npm registry shorthand, verified against `gooblin@1.3.1`. |
-| `npx github:jsleemaster/gooblin install` | Repository-source fallback path. |
+| `npx gooblin install` | Published npm 1.3.1 supports fresh copies, but its `install --force` and `uninstall` paths can delete consumer-owned files. Do not use those lifecycle commands. |
+| `npx github:jsleemaster/gooblin install` | Repository-source fallback containing the temporary destructive-operation refusal guard. |
 
 The installer copies a readable skill pack into `.gooblin/` in the current working directory. It copies:
 
@@ -74,7 +74,7 @@ npx gooblin status
 npx gooblin uninstall
 ```
 
-Use `--force` only when intentionally replacing or removing an existing `.gooblin/` directory.
+Temporary safety guard: the source installer in this repository refuses `install --force` and `uninstall` because the current marker cannot distinguish installed files from consumer-owned additions or edits. Published npm 1.3.1 predates this guard; do not use those two registry-package lifecycle commands. Back up and review `.gooblin/` manually until [#57](https://github.com/jsleemaster/gooblin/issues/57) publishes and verifies a fixed version. Ownership-aware lifecycle support remains tracked in [#49](https://github.com/jsleemaster/gooblin/issues/49).
 
 Repository-source fallback:
 
@@ -211,4 +211,4 @@ Use the npx skill-pack installer or the manual fallback path. Gooblin is designe
 
 Gooblin hooks are reminder-only. They do not access the network, collect telemetry, run dangerous commands, or mutate user files automatically.
 
-The npx installer is also local-only. It writes only `.gooblin/` in the target project unless you explicitly choose another target path.
+The npx installer is also local-only. A fresh install writes only `.gooblin/` in the target project unless you explicitly choose another target path. The source installer refuses automatic replacement and removal while file ownership cannot be verified; published npm 1.3.1 does not yet include that protection.
