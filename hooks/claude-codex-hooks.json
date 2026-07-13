@@ -1,6 +1,6 @@
 {
   "name": "gooblin-hooks",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Reminder-only lifecycle hooks for Gooblin mode. Supports GOOBLIN_DISABLE and GOOBLIN_HOOK_MODE.",
   "hooks": {
     "SessionStart": [

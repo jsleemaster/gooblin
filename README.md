@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version 1.3.1" src="https://img.shields.io/badge/version-1.3.1-111111">
+  <img alt="version 1.3.2" src="https://img.shields.io/badge/version-1.3.2-111111">
   <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-111111">
   <img alt="plugin style" src="https://img.shields.io/badge/plugin--style-yes-111111">
   <img alt="agent skills" src="https://img.shields.io/badge/agent--skills-yes-111111">
@@ -141,8 +141,8 @@ npx gooblin install
 
 Current status:
 
-- npm registry shorthand `gooblin@1.3.1` is published, but its destructive lifecycle commands are unsafe: it predates the refusal guard in this repository. Until a fixed version is published, do not run `npx gooblin install --force` or `npx gooblin uninstall` from the registry package.
-- The GitHub-source installer contains the refusal guard and remains available for users who need the source version.
+- Source package version `gooblin@1.3.2` contains the destructive-operation refusal guard.
+- Before using registry lifecycle commands, run `npx --yes gooblin --version`. Version 1.3.1 does not contain the guard; use those commands only after the resolved version is 1.3.2 or newer.
 
 Repository-source fallback:
 
@@ -150,7 +150,7 @@ Repository-source fallback:
 npx github:jsleemaster/gooblin install
 ```
 
-The source installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), this source version refuses `--force` replacement and `uninstall`. The published npm 1.3.1 package does **not** contain that guard; [#57](https://github.com/jsleemaster/gooblin/issues/57) remains open until a fixed registry version is published and verified.
+The 1.3.2 source installer writes `.gooblin/` in the target project. It does not enable hooks, edit host settings, access the network, or collect telemetry. Use `--dry-run`, `--target <dir>`, and `status` to inspect the copy. Until ownership manifests are implemented in [#49](https://github.com/jsleemaster/gooblin/issues/49), version 1.3.2 and newer refuse `--force` replacement and `uninstall`. Version 1.3.1 does **not** contain that guard; verify the resolved version before using registry lifecycle commands.
 
 ### Manual fallback
 

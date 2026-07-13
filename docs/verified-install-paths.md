@@ -2,7 +2,7 @@
 
 This page separates verified behavior from intended distribution commands.
 
-Current package version: `1.3.1`.
+Current source package version: `1.3.2`. Registry state can change independently; run `npm view gooblin name version dist-tags --json` before npm lifecycle commands. Version `1.3.1` predates the destructive-operation refusal guard.
 
 ## Verified Locally
 
@@ -13,10 +13,10 @@ Checked on 2026-06-29 from `/Users/smlee/Gooblin`.
 | Claude Code | `2.1.96` | `claude plugin marketplace add /Users/smlee/Gooblin`, `claude plugin install gooblin@gooblin --scope user`, `claude plugin list`. |
 | Codex CLI | `0.141.0` | `codex plugin marketplace add /Users/smlee/Gooblin --json`, `codex plugin add gooblin@gooblin --json`, `codex plugin list`. |
 
-Expected local result for current package version v1.3.1:
+Expected local result for source package version v1.3.2:
 
-- Claude Code: `gooblin@gooblin`, version `1.3.1`, status `enabled`.
-- Codex CLI: `gooblin@gooblin`, version `1.3.1`, status `installed, enabled`.
+- Claude Code: `gooblin@gooblin`, version `1.3.2`, status `enabled`.
+- Codex CLI: `gooblin@gooblin`, version `1.3.2`, status `installed, enabled`.
 
 ## Verified From Git Branch
 
@@ -64,7 +64,7 @@ Verified checks:
 
 Release v1.3.1 updates the public README and docs so the npm package page no longer describes the shorthand as future work.
 
-Safety boundary: npm 1.3.1 can perform recursive replacement/removal because it predates the refusal guard. Its fresh-install check above does not verify safe update or uninstall behavior. Do not run `npx gooblin install --force` or `npx gooblin uninstall` until #57 publishes and verifies a fixed registry version.
+Safety boundary: npm 1.3.1 can perform recursive replacement/removal because it predates the refusal guard. Its fresh-install check above does not verify safe update or uninstall behavior. The 1.3.2 source package refuses both operations. Before any npm lifecycle command, run `npx --yes gooblin --version`; do not run `install --force` or `uninstall` when it resolves to 1.3.1.
 
 ## Intended Remote Commands
 
