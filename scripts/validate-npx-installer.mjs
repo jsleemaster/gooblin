@@ -18,6 +18,32 @@ function sha256(filePath) {
   return createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 }
 
+function snapshotTree(root) {
+  const snapshot = [];
+
+  function visit(current, prefix = '') {
+    const entries = fs.readdirSync(current, { withFileTypes: true })
+      .sort((left, right) => left.name.localeCompare(right.name));
+
+    for (const entry of entries) {
+      const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+      const absolutePath = path.join(current, entry.name);
+
+      if (entry.isDirectory()) {
+        snapshot.push([`${relativePath}/`, 'directory']);
+        visit(absolutePath, relativePath);
+      } else if (entry.isSymbolicLink()) {
+        snapshot.push([relativePath, `symlink:${fs.readlinkSync(absolutePath)}`]);
+      } else {
+        snapshot.push([relativePath, `file:${sha256(absolutePath)}`]);
+      }
+    }
+  }
+
+  visit(root);
+  return snapshot;
+}
+
 const pkg = readJson('package.json');
 const installerPath = 'bin/gooblin.mjs';
 const source = fs.readFileSync(installerPath, 'utf8');
@@ -61,43 +87,58 @@ function runInstaller(target, args) {
   });
 }
 
-function createInstalledFixture(root) {
+function createInstalledFixture(root, { withMarker }) {
   const installRoot = path.join(root, '.gooblin');
-  fs.mkdirSync(installRoot, { recursive: true });
+  fs.mkdirSync(path.join(installRoot, 'consumer'), { recursive: true });
 
-  const marker = {
-    name: 'gooblin',
-    version: pkg.version,
-    installedAt: '2026-01-01T00:00:00.000Z',
-    installer: 'gooblin-npx',
-    target: root,
-  };
+  if (withMarker) {
+    const marker = {
+      name: 'gooblin',
+      version: pkg.version,
+      installedAt: '2026-01-01T00:00:00.000Z',
+      installer: 'gooblin-npx',
+      target: root,
+    };
+
+    fs.writeFileSync(
+      path.join(installRoot, 'GOOBLIN_INSTALL.json'),
+      `${JSON.stringify(marker, null, 2)}\n`,
+      'utf8',
+    );
+  }
 
   fs.writeFileSync(
-    path.join(installRoot, 'GOOBLIN_INSTALL.json'),
-    `${JSON.stringify(marker, null, 2)}\n`,
+    path.join(installRoot, 'README.md'),
+    '# Consumer-modified installed file\n',
+    'utf8',
+  );
+  fs.writeFileSync(
+    path.join(installRoot, 'consumer', 'user-notes.md'),
+    '# Keep me\nconsumer-owned content\n',
     'utf8',
   );
 
-  const userFile = path.join(installRoot, 'user-notes.md');
-  fs.writeFileSync(userFile, '# Keep me\nconsumer-owned content\n', 'utf8');
-
-  return { userFile, hash: sha256(userFile) };
+  return { installRoot, snapshot: snapshotTree(installRoot) };
 }
 
-function assertPreserved(userFile, expectedHash, label) {
-  assert(fs.existsSync(userFile), `${label} removed an existing user file`);
-  assert(sha256(userFile) === expectedHash, `${label} changed an existing user file`);
+function assertPreserved(installRoot, expectedSnapshot, label) {
+  assert(fs.existsSync(installRoot), `${label} removed the existing install directory`);
+
+  const actualSnapshot = snapshotTree(installRoot);
+  assert(
+    JSON.stringify(actualSnapshot) === JSON.stringify(expectedSnapshot),
+    `${label} changed the existing tree\nexpected: ${JSON.stringify(expectedSnapshot)}\nactual: ${JSON.stringify(actualSnapshot)}`,
+  );
 }
 
-function verifyDestructiveCommandIsBlocked(args, label) {
+function verifyDestructiveCommandIsBlocked(args, label, withMarker) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'gooblin-installer-'));
   try {
-    const { userFile, hash } = createInstalledFixture(root);
+    const { installRoot, snapshot } = createInstalledFixture(root, { withMarker });
     const result = runInstaller(root, args);
 
     assert(result.status !== 0, `${label} must fail until owned-file tracking exists`);
-    assertPreserved(userFile, hash, label);
+    assertPreserved(installRoot, snapshot, label);
     assert(
       result.stderr.includes('Refusing') || result.stderr.includes('disabled'),
       `${label} must explain the safety refusal`,
@@ -107,26 +148,30 @@ function verifyDestructiveCommandIsBlocked(args, label) {
   }
 }
 
-function verifyDryRunPreservesFiles(args, label) {
+function verifyDryRunPreservesFiles(args, label, withMarker) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'gooblin-installer-'));
   try {
-    const { userFile, hash } = createInstalledFixture(root);
+    const { installRoot, snapshot } = createInstalledFixture(root, { withMarker });
     const result = runInstaller(root, [...args, '--dry-run']);
 
     assert(result.status === 0, `${label} must succeed: ${result.stderr}`);
-    assertPreserved(userFile, hash, label);
+    assertPreserved(installRoot, snapshot, label);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
 }
 
-verifyDestructiveCommandIsBlocked(['install', '--force'], 'install --force');
-verifyDestructiveCommandIsBlocked(['uninstall'], 'uninstall');
-verifyDestructiveCommandIsBlocked(['uninstall', '--force'], 'uninstall --force');
+for (const withMarker of [true, false]) {
+  const fixture = withMarker ? 'marked' : 'markerless';
 
-verifyDryRunPreservesFiles(['install', '--force'], 'install --force --dry-run');
-verifyDryRunPreservesFiles(['uninstall'], 'uninstall --dry-run');
-verifyDryRunPreservesFiles(['uninstall', '--force'], 'uninstall --force --dry-run');
+  verifyDestructiveCommandIsBlocked(['install', '--force'], `${fixture} install --force`, withMarker);
+  verifyDestructiveCommandIsBlocked(['uninstall'], `${fixture} uninstall`, withMarker);
+  verifyDestructiveCommandIsBlocked(['uninstall', '--force'], `${fixture} uninstall --force`, withMarker);
+
+  verifyDryRunPreservesFiles(['install', '--force'], `${fixture} install --force --dry-run`, withMarker);
+  verifyDryRunPreservesFiles(['uninstall'], `${fixture} uninstall --dry-run`, withMarker);
+  verifyDryRunPreservesFiles(['uninstall', '--force'], `${fixture} uninstall --force --dry-run`, withMarker);
+}
 
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'gooblin-installer-'));
