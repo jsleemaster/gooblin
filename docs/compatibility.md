@@ -2,7 +2,7 @@
 
 These notes record what has actually been checked. They are not marketplace approval claims.
 
-Current source package version: `1.3.2`. npm `latest` remains `1.3.1` until the safety release is published and verified. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
+Current source package version: `1.3.2`. Registry state must be checked separately with `npm view gooblin version dist-tags --json`; version 1.3.1 lacks the destructive-operation guard and version 1.3.2 includes it. The latest plugin installer verification below remains the last checked installer result and may lag current package metadata until rechecked.
 
 ## Latest Local Verification
 
@@ -38,7 +38,7 @@ Result: `gooblin@gooblin` installed with version `1.2.0` and status `installed, 
 
 ## npx Installer Status
 
-Published npm `v1.3.1` remains the latest registry version during 1.3.2 release preparation. Its previously verified fresh-copy command is:
+At 1.3.2 release preparation on 2026-07-13, published npm `v1.3.1` was the last verified registry version. Its previously verified fresh-copy command was:
 
 ```bash
 npx gooblin install
@@ -46,7 +46,7 @@ npx gooblin install
 
 The installer copies readable Gooblin files into `.gooblin/` and does not enable hooks, edit host settings, access the network, or collect telemetry.
 
-Safety boundary: published npm 1.3.1 predates the destructive-operation refusal guard. Its fresh-copy path is available, but do not run `install --force` or `uninstall` from that registry package. The repository-source 1.3.2 release candidate contains the guard; #57 stays open until 1.3.2 is published and verified.
+Safety boundary: version 1.3.1 predates the destructive-operation refusal guard. Its fresh-copy path is available, but do not run `install --force` or `uninstall` with that version. Version 1.3.2 and newer contain the refusal guard; verify the resolved registry version before lifecycle commands.
 
 Repository-source fallback remains available:
 
