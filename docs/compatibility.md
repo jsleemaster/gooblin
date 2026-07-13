@@ -46,6 +46,8 @@ npx gooblin install
 
 The installer copies readable Gooblin files into `.gooblin/` and does not enable hooks, edit host settings, access the network, or collect telemetry.
 
+Safety boundary: published npm 1.3.1 predates the destructive-operation refusal guard. Its fresh-copy path is available, but do not run `install --force` or `uninstall` from that registry package. The repository-source installer contains the guard; #57 stays open until a fixed npm version is published and verified.
+
 Repository-source fallback remains available:
 
 ```bash
