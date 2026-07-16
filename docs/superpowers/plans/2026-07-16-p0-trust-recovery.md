@@ -61,6 +61,7 @@ Create \`scripts/validate-supply-chain.mjs\` with these exact checks:
    - checks that \`github.sha\`, checked-out \`HEAD\`, and live \`origin/main\` all equal \`source_sha\`
    - a check that workflow input \`version\` equals \`package.json\` version
    - exactly one dry-run pack and exactly one approved real \`npm pack --json\`; reject every alternate real pack form
+   - a canonical run scalar policy that permits only plain inline \`run\` values or the exact literal block marker \`|\`, rejects folded/chomped or quoted/escaped/anchored scalar forms, and rejects shell backslash continuation outside a heredoc
    - the publish job independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI from the downloaded tarball and requires non-empty matching pack/release metadata
    - a draft release machine gate that uses ephemeral \`github.token\` with \`contents: read\`, requires the exact draft tag and source SHA, and compares the attached tarball/checksum GitHub-reported SHA-256 digests with the downloaded files
    - the draft gate queries matching tag refs and requires no exact \`refs/tags/v<version>\` before npm publication, rather than treating draft \`target_commitish\` as proof that the public tag is absent
@@ -111,6 +112,7 @@ Create \`.github/workflows/publish-npm.yml\` with:
 - GitHub-hosted \`ubuntu-latest\`;
 - checkout, setup-node, upload-artifact, and download-artifact pinned to verified full SHAs;
 - no dependency installation because the package has no dependencies;
+- only canonical \`run\` scalars: plain inline values or the exact literal block marker \`|\`, with ambiguous scalar decorations and shell backslash continuation outside heredocs rejected;
 - a \`prepare\` job with \`contents: read\` only that checks out \`github.sha\`, proves \`github.ref == refs/heads/main\`, proves \`github.sha == source_sha\`, proves checked-out \`HEAD == source_sha\`, proves live \`origin/main == source_sha\`, verifies the package version and clean diff, runs validation, and creates exactly one real tarball with \`npm pack --json\`;
 - the \`prepare\` job records the tarball filename, SHA-256, npm integrity, npm shasum, version, and source SHA, then uploads the tarball, checksum, and metadata as one workflow artifact;
 - a dependent \`publish\` job bound to environment \`npm-release\` with only \`contents: read\` and \`id-token: write\`;

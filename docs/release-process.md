@@ -18,6 +18,8 @@ The workflow uses GitHub OIDC and must not receive a long-lived npm token. Prote
 
 The top-level `publish-npm` concurrency group does not cancel an in-progress run. This keeps a second dispatch from replacing the artifact or approval context of the first release.
 
+For static auditability, `publish-npm.yml` follows a canonical run scalar policy: every `run` value is either a plain inline scalar or the exact literal block marker `|`. Folded or chomped block markers, quoted, escaped, anchored, or other decorated inline scalar forms, and shell backslash continuations outside a heredoc are rejected.
+
 ## Per-release ordering
 
 Let `V` be the exact version from `package.json` and `S` the full source SHA selected for release. For the pending trust-recovery release, `V` is `1.3.2` and the draft release is `v1.3.2`; still read the value from the reviewed source instead of typing it from memory.

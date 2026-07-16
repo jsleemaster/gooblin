@@ -155,27 +155,43 @@ function yamlStepItems(lines, jobBlock) {
 
 function shellCommands(lines) {
   const commands = [];
+  const unsupportedRunStarts = new Set(['"', "'", '&', '*', '!', '>', '|', '[', ']', '{', '}', ',', '#', '%', '@', '`']);
   for (let index = 0; index < lines.length; index += 1) {
     const mapping = parseYamlMappingLine(lines[index], { allowSequence: true });
     if (mapping?.key !== 'run') continue;
     const runIndent = mapping.indent;
-    if (mapping.value && mapping.value !== '|' && mapping.value !== '>') {
-      const value = yamlScalar(mapping.value);
-      commands.push({ line: index + 1, text: (value ?? mapping.value).replace(/\s+/g, ' ').trim() });
+    if (mapping.value === '|') {
+      let heredoc = null;
+      for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+        const trimmed = lines[cursor].trim();
+        if (trimmed && indentOf(lines[cursor]) <= runIndent) break;
+        if (!trimmed) continue;
+        if (heredoc) {
+          if (trimmed === heredoc) heredoc = null;
+          continue;
+        }
+        check(
+          !trimmed.endsWith('\\'),
+          `${publishFile}:${cursor + 1} run block must not use shell backslash continuation outside a heredoc`,
+        );
+        commands.push({ line: cursor + 1, text: trimmed.replace(/\s+/g, ' ') });
+        const delimiter = trimmed.match(/<<-?['"]?([A-Za-z_][A-Za-z0-9_]*)['"]?/);
+        if (delimiter) heredoc = delimiter[1];
+      }
       continue;
     }
-    let heredoc = null;
-    for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
-      const trimmed = lines[cursor].trim();
-      if (trimmed && indentOf(lines[cursor]) <= runIndent) break;
-      if (!trimmed) continue;
-      if (heredoc) {
-        if (trimmed === heredoc) heredoc = null;
-        continue;
-      }
-      commands.push({ line: cursor + 1, text: trimmed.replace(/\s+/g, ' ') });
-      const delimiter = trimmed.match(/<<-?['"]?([A-Za-z_][A-Za-z0-9_]*)['"]?/);
-      if (delimiter) heredoc = delimiter[1];
+    const plainInline = mapping.value
+      && !unsupportedRunStarts.has(mapping.value[0])
+      && !/^[-?:](?:\s|$)/.test(mapping.value)
+      && !/^(?:null|Null|NULL|~|true|True|TRUE|false|False|FALSE)$/.test(mapping.value)
+      && !mapping.value.includes('\\');
+    check(
+      plainInline,
+      `${publishFile}:${index + 1} run must use a plain inline scalar or the exact literal block marker |`,
+    );
+    if (plainInline) {
+      const value = yamlScalar(mapping.value);
+      commands.push({ line: index + 1, text: (value ?? mapping.value).replace(/\s+/g, ' ').trim() });
     }
   }
   return commands;
@@ -482,6 +498,7 @@ if (release) {
     'machine gate',
     'GitHub-reported SHA-256',
     'queries matching tag refs and requires no exact `refs/tags/vV` before npm publication',
+    'canonical run scalar policy',
     'legacy npm `gitHead` is observational only',
     'trusted-publishing provenance',
   ]) {
@@ -505,6 +522,7 @@ if (plan) {
     'draft release machine gate',
     'GitHub-reported SHA-256 digests',
     'queries matching tag refs and requires no exact `refs/tags/v<version>` before npm publication',
+    'canonical run scalar policy',
   ]) {
     requireText(normalizedTask1, value, `${planFile} Task 1`);
   }
