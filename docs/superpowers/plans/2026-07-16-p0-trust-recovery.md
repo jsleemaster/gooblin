@@ -47,6 +47,8 @@ Create \`scripts/validate-supply-chain.mjs\` with these exact checks:
 1. Walk \`.github/workflows/*.yml\`; every \`uses:\` value must match \`owner/repo@<40 lowercase hex characters>\`.
 2. \`publish-npm.yml\` must contain:
    - \`workflow_dispatch\`
+   - required string inputs \`version\` and \`source_sha\`
+   - separate \`prepare\` and \`publish\` jobs
    - \`environment: npm-release\`
    - \`id-token: write\`
    - \`contents: read\`
@@ -54,7 +56,9 @@ Create \`scripts/validate-supply-chain.mjs\` with these exact checks:
    - a Node/npm minimum-version check for Node \`>=22.14.0\` and npm \`>=11.5.1\`
    - \`npm run validate\`, \`git diff --check\`, \`npm pack --dry-run\`, and \`npm publish\`
    - a check that \`github.ref\` is \`refs/heads/main\`
+   - checks that \`github.sha\`, checked-out \`HEAD\`, and live \`origin/main\` all equal \`source_sha\`
    - a check that workflow input \`version\` equals \`package.json\` version
+   - exactly one real \`npm pack --json\`; the publish job must download, verify, and publish that same uploaded workflow artifact without repacking
 3. \`publish-npm.yml\` must not contain \`NPM_TOKEN\`, \`NODE_AUTH_TOKEN\`, \`secrets.\`, \`pull_request_target\`, or \`persist-credentials: true\`.
 4. \`SECURITY.md\` must link \`https://github.com/jsleemaster/gooblin/security/advisories/new\`, state the supported source/registry boundary, and forbid public disclosure before coordinated review.
 5. \`docs/release-process.md\` must name \`jsleemaster/gooblin\`, \`publish-npm.yml\`, \`npm-release\`, \`npm publish\`, registry verification, source SHA verification, tag/release ordering, and provenance verification.
@@ -85,6 +89,7 @@ Use these verified tag targets and retain the tag as a comment:
 uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
 uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
 \`\`\`
 
 Set checkout \`persist-credentials: false\` in validation, benchmark, and publish workflows.
@@ -94,18 +99,18 @@ Set checkout \`persist-credentials: false\` in validation, benchmark, and publis
 Create \`.github/workflows/publish-npm.yml\` with:
 
 - only \`workflow_dispatch\`;
-- required string input \`version\`;
-- \`permissions: { contents: read, id-token: write }\`;
-- job environment \`npm-release\`;
+- required string inputs \`version\` and \`source_sha\`;
+- workflow-level \`contents: read\` only;
 - GitHub-hosted \`ubuntu-latest\`;
-- checkout and setup-node pinned to the SHAs above;
-- Node 24 and \`registry-url: https://registry.npmjs.org\`;
-- \`package-manager-cache: false\`;
+- checkout, setup-node, upload-artifact, and download-artifact pinned to verified full SHAs;
 - no dependency installation because the package has no dependencies;
-- explicit main-branch, source-version, clean-diff, Node/npm version, validation, and pack gates;
-- \`npm publish\` as the final mutating command.
+- a \`prepare\` job with \`contents: read\` only that checks out \`github.sha\`, proves \`github.ref == refs/heads/main\`, proves \`github.sha == source_sha\`, proves checked-out \`HEAD == source_sha\`, proves live \`origin/main == source_sha\`, verifies the package version and clean diff, runs validation, and creates exactly one real tarball with \`npm pack --json\`;
+- the \`prepare\` job records the tarball filename, SHA-256, npm integrity, npm shasum, version, and source SHA, then uploads the tarball, checksum, and metadata as one workflow artifact;
+- a dependent \`publish\` job bound to environment \`npm-release\` with only \`contents: read\` and \`id-token: write\`;
+- the \`publish\` job uses Node 24, \`registry-url: https://registry.npmjs.org\`, and \`package-manager-cache: false\`, downloads that exact artifact, verifies its checksum and metadata, and never runs \`npm pack\` again;
+- \`npm publish <downloaded-tarball>\` as the final mutating command.
 
-The version gate must read \`package.json\` and exit nonzero unless both the input and package version are identical. The runtime gate must parse semantic versions and reject Node below \`22.14.0\` or npm below \`11.5.1\`.
+The version gate must read \`package.json\` and exit nonzero unless both the input and package version are identical. The publish runtime gate must parse semantic versions and reject Node below \`22.14.0\` or npm below \`11.5.1\`. The workflow must not use \`NPM_TOKEN\`, \`NODE_AUTH_TOKEN\`, or any long-lived secret.
 
 - [ ] **Step 5: Add the security and release contracts**
 
@@ -122,10 +127,13 @@ The version gate must read \`package.json\` and exit nonzero unless both the inp
 1. merge an exact reviewed source commit to \`main\`;
 2. verify all required checks;
 3. configure npm trusted publisher as user \`jsleemaster\`, repository \`gooblin\`, workflow \`publish-npm.yml\`, environment \`npm-release\`, allowed action \`npm publish\`;
-4. dispatch from \`main\` with the exact package version;
-5. verify registry version/dist-tag, \`npx --yes gooblin --version\`, fresh install, destructive-command preservation, integrity, and provenance;
-6. only then create an annotated tag and GitHub release at the published source SHA;
-7. update release evidence documents from observed output.
+4. enable release immutability before the new release, then create an exact-source draft release;
+5. dispatch from \`main\` with the exact package version and source SHA;
+6. after \`prepare\`, download and verify the exact workflow artifact, attach the tarball and checksum to the draft, and read the target and assets back before approving \`npm-release\`;
+7. let \`publish\` verify and publish the same artifact with OIDC, with no repack;
+8. verify registry version/dist-tag, \`npx --yes gooblin --version\`, fresh install, destructive-command preservation, integrity, signature audit, and provenance;
+9. only then publish the draft and verify the immutable release and tag both resolve to the source SHA;
+10. update release evidence documents from observed output.
 
 Update \`docs/maintenance.md\` so full-SHA Action pinning, OIDC publishing, and the \`npm-release\` environment are in the impact matrix.
 
@@ -198,20 +206,25 @@ Allowed action: npm publish
 
 Do not create or store a long-lived npm publish token.
 
-- [ ] **Step 4: Dispatch and observe the publish workflow**
+- [ ] **Step 4: Enable release immutability and create the exact-source draft**
+
+Enable GitHub release immutability before creating this release and read the setting back. Let \`S\` be the exact merge SHA from Step 1. Create draft release \`v1.3.2\` targeted at \`S\`; do not publish the draft yet.
+
+- [ ] **Step 5: Dispatch the prepare job and attach its exact artifact**
 
 Run from the exact merged \`main\` revision:
 
 \`\`\`bash
-gh workflow run publish-npm.yml --ref main -f version=1.3.2
-gh run watch --exit-status
+gh workflow run publish-npm.yml --ref main -f version=1.3.2 -f source_sha=<S>
 \`\`\`
 
-Expected: environment approval occurs, validation and pack gates pass, OIDC authentication succeeds, and npm publishes 1.3.2.
+Expected: the \`prepare\` job validates \`S\`, creates exactly one real \`.tgz\`, records its checksum and npm metadata, uploads the workflow artifact, and the \`publish\` job waits on \`npm-release\` approval. Download that workflow artifact, verify its checksum, attach that same \`.tgz\` and \`.sha256\` to draft \`v1.3.2\`, and read back the draft target and assets.
 
-- [ ] **Step 5: Verify the live registry and installer safety**
+- [ ] **Step 6: Approve OIDC publish and verify the live registry**
 
-Run:
+Only after the draft target and assets are verified, approve the waiting \`npm-release\` deployment. Expected: the publish job downloads the same workflow artifact, verifies it without repacking, OIDC authentication succeeds, and npm publishes 1.3.2.
+
+Then run:
 
 \`\`\`bash
 npm view gooblin name version dist-tags gitHead dist.integrity --json
@@ -220,19 +233,18 @@ npx --yes gooblin --version
 
 Then install into a fresh temporary project and run \`install --force\`, \`uninstall\`, and \`uninstall --force\` against marked and markerless modified fixtures. Each destructive command must exit nonzero and preserve the complete path/hash snapshot.
 
-- [ ] **Step 6: Create immutable source linkage**
+- [ ] **Step 7: Publish and verify immutable source linkage**
 
-Only after Step 5 succeeds:
+Only after Step 6 succeeds, publish the existing draft. Do not create a second release or replace the already attached assets:
 
 \`\`\`bash
-git tag -a v1.3.2 <published-source-sha> -m "Gooblin v1.3.2"
-git push origin v1.3.2
-gh release create v1.3.2 --target <published-source-sha> --title "Gooblin v1.3.2" --notes-file docs/releases/v1.3.2.md
+gh release edit v1.3.2 --draft=false
+gh release verify v1.3.2
 \`\`\`
 
-Verify the tag target, release target, npm \`gitHead\`, integrity, and provenance all refer to the same source.
+Verify the immutable release flag, tag target, release target, npm \`gitHead\`, integrity, signature audit, and provenance all refer to \`S\` and the same tarball.
 
-- [ ] **Step 7: Record only observed post-publish evidence**
+- [ ] **Step 8: Record only observed post-publish evidence**
 
 Update the listed public docs with exact date, source SHA, workflow run URL, registry values, installer results, tag/release URL, and any limitations. Run the common gates, commit, review, and merge this evidence PR. Close #57 only after registry and tag/release readback succeeds.
 
