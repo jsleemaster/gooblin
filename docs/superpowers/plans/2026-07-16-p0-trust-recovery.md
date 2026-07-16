@@ -63,6 +63,7 @@ Create \`scripts/validate-supply-chain.mjs\` with these exact checks:
    - exactly one dry-run pack and exactly one approved real \`npm pack --json\`; reject every alternate real pack form
    - the publish job independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI from the downloaded tarball and requires non-empty matching pack/release metadata
    - a draft release machine gate that uses ephemeral \`github.token\` with \`contents: read\`, requires the exact draft tag and source SHA, and compares the attached tarball/checksum GitHub-reported SHA-256 digests with the downloaded files
+   - the draft gate queries matching tag refs and requires no exact \`refs/tags/v<version>\` before npm publication, rather than treating draft \`target_commitish\` as proof that the public tag is absent
    - the publish job must publish that same uploaded workflow artifact without repacking
 3. \`publish-npm.yml\` must not contain \`NPM_TOKEN\`, \`NODE_AUTH_TOKEN\`, \`secrets.\`, \`pull_request_target\`, or \`persist-credentials: true\`.
 4. \`SECURITY.md\` must link \`https://github.com/jsleemaster/gooblin/security/advisories/new\`, state the supported source/registry boundary, and forbid public disclosure before coordinated review.
@@ -115,6 +116,7 @@ Create \`.github/workflows/publish-npm.yml\` with:
 - a dependent \`publish\` job bound to environment \`npm-release\` with only \`contents: read\` and \`id-token: write\`;
 - the \`publish\` job uses Node 24, \`registry-url: https://registry.npmjs.org\`, and \`package-manager-cache: false\`, downloads that exact artifact, independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI, requires every pack/release metadata field to be non-empty and equal to the recomputed tarball values, and never runs \`npm pack\` again;
 - before publication, a draft release machine gate uses ephemeral \`github.token\` under \`contents: read\` to require exactly one draft \`v<version>\` at \`source_sha\`, exactly the tarball and checksum assets, and GitHub-reported SHA-256 digests matching the downloaded files;
+- through the same read-only GitHub API access, that gate queries matching tag refs and requires no exact \`refs/tags/v<version>\` before npm publication;
 - \`npm publish <downloaded-tarball>\` as the final mutating command.
 
 The version gate must read \`package.json\` and exit nonzero unless both the input and package version are identical. The publish runtime gate must parse semantic versions and reject Node below \`22.14.0\` or npm below \`11.5.1\`. The workflow must not use \`NPM_TOKEN\`, \`NODE_AUTH_TOKEN\`, or any long-lived secret.
@@ -215,7 +217,7 @@ Do not create or store a long-lived npm publish token.
 
 - [ ] **Step 4: Enable release immutability and create the exact-source draft**
 
-Enable GitHub release immutability before creating this release and read the setting back. Let \`S\` be the exact merge SHA from Step 1. Create draft release \`v1.3.2\` targeted at \`S\`; do not publish the draft yet.
+Enable GitHub release immutability before creating this release and read the setting back. Let \`S\` be the exact merge SHA from Step 1. Query matching tag refs and confirm that exact \`refs/tags/v1.3.2\` is absent; a draft's \`target_commitish\` cannot establish that. Create draft release \`v1.3.2\` targeted at \`S\`; do not publish the draft yet.
 
 - [ ] **Step 5: Dispatch the prepare job and attach its exact artifact**
 
@@ -229,7 +231,7 @@ Expected: the \`prepare\` job validates \`S\`, creates exactly one real \`.tgz\`
 
 - [ ] **Step 6: Approve OIDC publish and verify the live registry**
 
-Only after the draft target and assets are verified, approve the waiting \`npm-release\` deployment. Expected: the publish job downloads the same workflow artifact, verifies it without repacking, OIDC authentication succeeds, and npm publishes 1.3.2.
+Only after the draft target and assets are verified, approve the waiting \`npm-release\` deployment. The machine gate uses the existing ephemeral token with read-only GitHub API access, queries matching tag refs and requires no exact \`refs/tags/v<version>\` before npm publication. Expected: the publish job downloads the same workflow artifact, verifies it without repacking, OIDC authentication succeeds, and npm publishes 1.3.2.
 
 Then run:
 

@@ -299,6 +299,7 @@ jobs:
         run: |
           set -euo pipefail
           gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --slurp > "$RUNNER_TEMP/releases.json"
+          gh api "repos/${GITHUB_REPOSITORY}/git/matching-refs/tags/v${INPUT_VERSION}" > "$RUNNER_TEMP/tag-refs.json"
           node --input-type=module <<'NODE'
           import { createHash } from 'node:crypto';
           import fs from 'node:fs';
@@ -312,6 +313,15 @@ jobs:
             throw new Error('GitHub releases response must be paginated arrays');
           }
           const expectedTag = `v${process.env.INPUT_VERSION}`;
+          const expectedTagRef = `refs/tags/${expectedTag}`;
+          const tagRefs = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/tag-refs.json`, 'utf8'));
+          if (!Array.isArray(tagRefs) || tagRefs.some((tagRef) => typeof tagRef?.ref !== 'string')) {
+            throw new Error('GitHub matching tag refs response must be an array of refs');
+          }
+          const exactTagRefs = tagRefs.filter((tagRef) => tagRef.ref === expectedTagRef);
+          if (exactTagRefs.length !== 0) {
+            throw new Error(`tag already exists before npm publication: ${expectedTagRef}`);
+          }
           const matchingDrafts = pages
             .flat()
             .filter((release) => release.tag_name === expectedTag && release.draft === true);

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const failures = [];
+const publishFile = '.github/workflows/publish-npm.yml';
 
 function check(condition, message) {
   if (!condition) failures.push(message);
@@ -29,12 +30,35 @@ function indentOf(line) {
   return line.match(/^ */)[0].length;
 }
 
-function findYamlBlock(lines, key, indent, start = 0, end = lines.length, label = key) {
-  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const pattern = new RegExp(`^ {${indent}}${escapedKey}:\\s*(.*)$`);
+function parseYamlMappingLine(line, { allowSequence = false } = {}) {
+  const sequence = line.match(/^( *)(-)\s+(.+)$/);
+  const candidate = sequence && allowSequence ? `${sequence[1]}  ${sequence[3]}` : line;
+  if (sequence && !allowSequence) return null;
+  const match = candidate.match(/^( *)(?:"([^"]+)"|'([^']+)'|([A-Za-z0-9_-]+))\s*:\s*(.*)$/);
+  if (!match) return null;
+  return {
+    indent: match[1].length,
+    key: match[2] ?? match[3] ?? match[4],
+    value: match[5].trim(),
+    sequence: Boolean(sequence),
+  };
+}
+
+function yamlScalar(value) {
+  const trimmed = value.trim();
+  const doubleQuoted = trimmed.match(/^"([^"]*)"(?:\s+#.*)?$/);
+  if (doubleQuoted) return doubleQuoted[1];
+  const singleQuoted = trimmed.match(/^'([^']*)'(?:\s+#.*)?$/);
+  if (singleQuoted) return singleQuoted[1];
+  const commentIndex = trimmed.search(/\s+#/);
+  const plain = (commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex)).trim();
+  return plain || null;
+}
+
+function findYamlBlock(lines, key, indent, start = 0, end = lines.length, label = key, file = publishFile) {
   for (let index = start; index < end; index += 1) {
-    const match = lines[index].match(pattern);
-    if (!match) continue;
+    const mapping = parseYamlMappingLine(lines[index]);
+    if (!mapping || mapping.indent !== indent || mapping.key !== key) continue;
     let blockEnd = end;
     for (let cursor = index + 1; cursor < end; cursor += 1) {
       const trimmed = lines[cursor].trim();
@@ -44,9 +68,17 @@ function findYamlBlock(lines, key, indent, start = 0, end = lines.length, label 
         break;
       }
     }
-    return { key, indent, start: index, end: blockEnd, value: match[1].trim() };
+    return {
+      key,
+      indent,
+      start: index,
+      end: blockEnd,
+      value: mapping.value,
+      label,
+      file,
+    };
   }
-  failures.push(`${publishFile} missing ${label} block`);
+  failures.push(`${file} missing ${label} block`);
   return null;
 }
 
@@ -55,9 +87,14 @@ function directYamlEntries(lines, block) {
   const childIndent = block.indent + 2;
   const entries = [];
   for (let index = block.start + 1; index < block.end; index += 1) {
-    if (indentOf(lines[index]) !== childIndent) continue;
-    const match = lines[index].match(/^\s*([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (match) entries.push({ key: match[1], value: match[2].trim(), line: index + 1 });
+    const trimmed = lines[index].trim();
+    if (!trimmed || trimmed.startsWith('#') || indentOf(lines[index]) !== childIndent) continue;
+    const mapping = parseYamlMappingLine(lines[index]);
+    if (!mapping || mapping.indent !== childIndent) {
+      failures.push(`${block.file}:${index + 1} ${block.label} contains a noncanonical direct child`);
+      continue;
+    }
+    entries.push({ key: mapping.key, value: mapping.value, line: index + 1 });
   }
   return entries;
 }
@@ -81,26 +118,50 @@ function yamlStepItems(lines, jobBlock) {
   const itemIndent = steps.indent + 2;
   const starts = [];
   for (let index = steps.start + 1; index < steps.end; index += 1) {
-    const match = lines[index].match(new RegExp(`^ {${itemIndent}}- name:\\s*(.+)$`));
-    if (match) starts.push({ start: index, name: match[1].trim() });
+    const trimmed = lines[index].trim();
+    if (!trimmed || trimmed.startsWith('#') || indentOf(lines[index]) !== itemIndent) continue;
+    const mapping = parseYamlMappingLine(lines[index], { allowSequence: true });
+    if (!mapping?.sequence || mapping.indent !== itemIndent + 2) {
+      failures.push(`${steps.file}:${index + 1} ${jobBlock.key}.steps contains a noncanonical sequence item`);
+    }
+    starts.push({ start: index, initial: mapping });
   }
-  return starts.map((item, index) => ({
-    ...item,
-    indent: itemIndent,
-    end: starts[index + 1]?.start ?? steps.end,
-    text: lines.slice(item.start, starts[index + 1]?.start ?? steps.end).join('\n'),
-  }));
+  return starts.map((item, index) => {
+    const end = starts[index + 1]?.start ?? steps.end;
+    const properties = item.initial?.sequence ? [item.initial] : [];
+    for (let cursor = item.start + 1; cursor < end; cursor += 1) {
+      const trimmed = lines[cursor].trim();
+      if (!trimmed || trimmed.startsWith('#') || indentOf(lines[cursor]) !== itemIndent + 2) continue;
+      const mapping = parseYamlMappingLine(lines[cursor]);
+      if (!mapping || mapping.indent !== itemIndent + 2) {
+        failures.push(`${steps.file}:${cursor + 1} ${jobBlock.key}.steps item contains a noncanonical direct property`);
+        continue;
+      }
+      properties.push(mapping);
+    }
+    const names = properties.filter((property) => property.key === 'name');
+    check(names.length <= 1, `${steps.file}:${item.start + 1} workflow step must define name at most once`);
+    const name = names.length === 1 ? yamlScalar(names[0].value) : null;
+    check(names.length === 0 || name !== null, `${steps.file}:${item.start + 1} workflow step name must be a scalar`);
+    return {
+      start: item.start,
+      name,
+      indent: itemIndent,
+      end,
+      text: lines.slice(item.start, end).join('\n'),
+    };
+  });
 }
 
 function shellCommands(lines) {
   const commands = [];
   for (let index = 0; index < lines.length; index += 1) {
-    const match = lines[index].match(/^(\s*)run:\s*(.*)$/);
-    if (!match) continue;
-    const runIndent = match[1].length;
-    const value = match[2].trim();
-    if (value && value !== '|' && value !== '>') {
-      commands.push({ line: index + 1, text: value.replace(/\s+/g, ' ').trim() });
+    const mapping = parseYamlMappingLine(lines[index], { allowSequence: true });
+    if (mapping?.key !== 'run') continue;
+    const runIndent = mapping.indent;
+    if (mapping.value && mapping.value !== '|' && mapping.value !== '>') {
+      const value = yamlScalar(mapping.value);
+      commands.push({ line: index + 1, text: (value ?? mapping.value).replace(/\s+/g, ' ').trim() });
       continue;
     }
     let heredoc = null;
@@ -125,24 +186,34 @@ const workflowFiles = fs.readdirSync(workflowDir)
   .filter((name) => name.endsWith('.yml'))
   .sort();
 const actionRef = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+@[0-9a-f]{40}$/;
+const actionLike = /\b[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+@[A-Za-z0-9_.-]+/;
 
 for (const name of workflowFiles) {
   const file = path.join(workflowDir, name);
   const text = fs.readFileSync(file, 'utf8');
   for (const [index, line] of text.split('\n').entries()) {
-    const match = line.match(/^\s*(?:-\s*)?uses:\s*([^\s#]+)/);
-    if (!match) continue;
+    const mapping = parseYamlMappingLine(line, { allowSequence: true });
+    if (mapping?.key !== 'uses') {
+      const trimmed = line.trim();
+      check(
+        !trimmed || trimmed.startsWith('#') || !actionLike.test(line),
+        `${file}:${index + 1} action-like reference must use a canonical uses mapping`,
+      );
+      continue;
+    }
+    const reference = yamlScalar(mapping.value);
     check(
-      actionRef.test(match[1]),
+      reference !== null && actionRef.test(reference),
       `${file}:${index + 1} uses must pin owner/repo to a 40-character lowercase commit SHA`,
     );
   }
 
   const lines = text.split('\n');
   for (const [index, line] of lines.entries()) {
-    if (!line.includes('uses: actions/checkout@')) continue;
-    const inlineUses = /^\s*-\s*uses:/.test(line);
-    const propertyIndent = indentOf(line) + (inlineUses ? 2 : 0);
+    const mapping = parseYamlMappingLine(line, { allowSequence: true });
+    const reference = mapping?.key === 'uses' ? yamlScalar(mapping.value) : null;
+    if (!reference?.startsWith('actions/checkout@')) continue;
+    const propertyIndent = mapping.indent;
     const itemIndent = propertyIndent - 2;
     let itemStart = index;
     for (let cursor = index; cursor >= 0; cursor -= 1) {
@@ -158,16 +229,24 @@ for (const name of workflowFiles) {
         break;
       }
     }
-    const checkoutStep = lines.slice(itemStart, itemEnd);
-    const persistLines = checkoutStep.filter((candidate) => (
-      indentOf(candidate) === propertyIndent + 2
-      && candidate.trim() === 'persist-credentials: false'
-    ));
-    check(persistLines.length === 1, `${file}:${index + 1} checkout step must set persist-credentials: false exactly once`);
+    const withBlock = findYamlBlock(
+      lines,
+      'with',
+      propertyIndent,
+      itemStart,
+      itemEnd,
+      `checkout step at line ${index + 1} with`,
+      file,
+    );
+    const persistEntries = directYamlEntries(lines, withBlock)
+      .filter((entry) => entry.key === 'persist-credentials');
+    check(
+      persistEntries.length === 1 && persistEntries[0]?.value === 'false',
+      `${file}:${index + 1} checkout step must set persist-credentials: false exactly once`,
+    );
   }
 }
 
-const publishFile = '.github/workflows/publish-npm.yml';
 const publish = readRequired(publishFile);
 
 if (publish) {
@@ -231,8 +310,23 @@ if (publish) {
     check(directYamlValue(publishLines, downloadWith, 'name') === artifactName, `${publishFile} download must use the same artifact name`);
   }
 
-  const artifactStep = publishSteps.find((step) => step.name === 'Verify exact prepared artifact');
-  check(Boolean(artifactStep), `${publishFile} publish job missing exact artifact verification step`);
+  const artifactSteps = publishSteps.filter((step) => step.name === 'Verify exact prepared artifact');
+  const draftSteps = publishSteps.filter((step) => step.name === 'Verify attached draft release assets');
+  const finalPublishSteps = publishSteps.filter((step) => step.name === 'Publish exact prepared tarball with OIDC');
+  check(artifactSteps.length === 1, `${publishFile} publish job must contain exactly one exact artifact verification step by name`);
+  check(draftSteps.length === 1, `${publishFile} publish job must contain exactly one draft release machine gate by name`);
+  check(finalPublishSteps.length === 1, `${publishFile} publish job must contain exactly one final publish step by name`);
+  const [artifactStep] = artifactSteps;
+  const [draftStep] = draftSteps;
+  const [finalPublishStep] = finalPublishSteps;
+  if (artifactStep && draftStep && finalPublishStep) {
+    check(
+      publishSteps.indexOf(artifactStep) < publishSteps.indexOf(draftStep)
+        && publishSteps.indexOf(draftStep) < publishSteps.indexOf(finalPublishStep)
+        && publishSteps.indexOf(finalPublishStep) === publishSteps.length - 1,
+      `${publishFile} artifact verification, draft gate, and final publish steps must be unique and ordered last`,
+    );
+  }
   if (artifactStep) {
     for (const value of [
       "createHash('sha256')",
@@ -253,12 +347,18 @@ if (publish) {
     ]) requireText(artifactStep.text, value, `${publishFile} artifact verification step`);
   }
 
-  const draftStep = publishSteps.find((step) => step.name === 'Verify attached draft release assets');
-  check(Boolean(draftStep), `${publishFile} publish job missing draft release machine gate`);
   if (draftStep) {
     const draftEnv = findYamlBlock(publishLines, 'env', 8, draftStep.start + 1, draftStep.end, 'draft release gate env');
     requireExactKeys(publishLines, draftEnv, ['GH_TOKEN', 'INPUT_SOURCE_SHA', 'INPUT_VERSION', 'TARBALL'], 'draft release gate env');
     check(directYamlValue(publishLines, draftEnv, 'GH_TOKEN') === '${{ github.token }}', `${publishFile} draft gate must use ephemeral github.token`);
+    for (const [pattern, description] of [
+      [/^\s*gh api "repos\/\$\{GITHUB_REPOSITORY\}\/git\/matching-refs\/tags\/v\$\{INPUT_VERSION\}" > "\$RUNNER_TEMP\/tag-refs\.json"\s*$/m, 'exact read-only matching tag refs query'],
+      [/^\s*const expectedTagRef = `refs\/tags\/\$\{expectedTag\}`;\s*$/m, 'exact expected tag ref construction'],
+      [/^\s*const exactTagRefs = tagRefs\.filter\(\(tagRef\) => tagRef\.ref === expectedTagRef\);\s*$/m, 'exact tag ref filtering'],
+      [/^\s*if \(exactTagRefs\.length !== 0\) \{\s*$/m, 'pre-existing exact tag rejection'],
+    ]) {
+      requirePattern(draftStep.text, pattern, `${publishFile} draft release machine gate missing ${description}`);
+    }
     for (const value of [
       'gh api --paginate',
       'release.tag_name === expectedTag && release.draft === true',
@@ -270,8 +370,6 @@ if (publish) {
     ]) {
       requireText(draftStep.text, value, `${publishFile} draft release machine gate`);
     }
-    const publishStepIndex = publishSteps.findIndex((step) => step.name === 'Publish exact prepared tarball with OIDC');
-    check(publishSteps.indexOf(draftStep) > publishSteps.indexOf(artifactStep) && publishSteps.indexOf(draftStep) < publishStepIndex, `${publishFile} draft gate must run after artifact verification and before npm publish`);
   }
 
   for (const [pattern, description] of [
@@ -383,6 +481,7 @@ if (release) {
     'observed output',
     'machine gate',
     'GitHub-reported SHA-256',
+    'queries matching tag refs and requires no exact `refs/tags/vV` before npm publication',
     'legacy npm `gitHead` is observational only',
     'trusted-publishing provenance',
   ]) {
@@ -405,6 +504,7 @@ if (plan) {
     'independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI',
     'draft release machine gate',
     'GitHub-reported SHA-256 digests',
+    'queries matching tag refs and requires no exact `refs/tags/v<version>` before npm publication',
   ]) {
     requireText(normalizedTask1, value, `${planFile} Task 1`);
   }
@@ -413,6 +513,7 @@ if (plan) {
     'must not be required for tarball publication',
     'trusted-publishing provenance',
     'workflow identity and source SHA',
+    'queries matching tag refs and requires no exact `refs/tags/v<version>` before npm publication',
   ]) {
     requireText(normalizedTask2, value, `${planFile} Task 2`);
   }
