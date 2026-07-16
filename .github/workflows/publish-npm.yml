@@ -1,0 +1,356 @@
+name: Publish npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact package.json version to publish
+        required: true
+        type: string
+      source_sha:
+        description: Exact main commit to package and publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare immutable npm artifact
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      tarball: ${{ steps.pack.outputs.tarball }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Verify main and exact source SHA
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha }}
+          WORKFLOW_REF: ${{ github.ref }}
+          WORKFLOW_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "source_sha must be a full lowercase commit SHA" >&2
+            exit 1
+          fi
+          if [[ "$WORKFLOW_REF" != "refs/heads/main" ]]; then
+            echo "publish-npm.yml must be dispatched from main" >&2
+            exit 1
+          fi
+          if [[ "$WORKFLOW_SHA" != "$EXPECTED_SOURCE_SHA" ]]; then
+            echo "github.sha does not match source_sha" >&2
+            exit 1
+          fi
+          if [[ "$(git rev-parse HEAD)" != "$EXPECTED_SOURCE_SHA" ]]; then
+            echo "checked-out HEAD does not match source_sha" >&2
+            exit 1
+          fi
+          origin_main_sha="$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')"
+          if [[ "$origin_main_sha" != "$EXPECTED_SOURCE_SHA" ]]; then
+            echo "live origin/main does not match source_sha" >&2
+            exit 1
+          fi
+
+      - name: Verify package version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const inputVersion = process.env.INPUT_VERSION;
+          const packageVersion = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
+          if (inputVersion !== packageVersion) {
+            console.error(`workflow version ${inputVersion} does not match package.json ${packageVersion}`);
+            process.exit(1);
+          }
+          NODE
+
+      - name: Run validation
+        run: npm run validate
+
+      - name: Verify clean source diff
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          if [[ -n "$(git status --short)" ]]; then
+            echo "source checkout is not clean" >&2
+            git status --short >&2
+            exit 1
+          fi
+
+      - name: Review package payload
+        run: npm pack --dry-run
+
+      - name: Create one release tarball
+        id: pack
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          npm pack --json > npm-pack.json
+          tarball="$(node --input-type=module -e "import fs from 'node:fs'; const packs = JSON.parse(fs.readFileSync('npm-pack.json', 'utf8')); if (packs.length !== 1) process.exit(1); process.stdout.write(packs[0].filename);")"
+          if [[ "$tarball" != "gooblin-${INPUT_VERSION}.tgz" || ! -f "$tarball" ]]; then
+            echo "npm pack produced an unexpected tarball: $tarball" >&2
+            exit 1
+          fi
+          sha256sum "$tarball" > "$tarball.sha256"
+          export TARBALL="$tarball"
+          export SHA256="$(awk '{print $1}' "$tarball.sha256")"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const [pack] = JSON.parse(fs.readFileSync('npm-pack.json', 'utf8'));
+          if (pack.filename !== process.env.TARBALL || pack.version !== process.env.INPUT_VERSION) {
+            throw new Error('npm pack metadata does not match the requested release');
+          }
+          const metadata = {
+            package: 'gooblin',
+            version: process.env.INPUT_VERSION,
+            source_sha: process.env.INPUT_SOURCE_SHA,
+            tarball: process.env.TARBALL,
+            sha256: process.env.SHA256,
+            integrity: pack.integrity,
+            shasum: pack.shasum,
+          };
+          fs.writeFileSync('release-metadata.json', `${JSON.stringify(metadata, null, 2)}\n`);
+          NODE
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Prepared npm artifact"
+            echo "- Filename: \`$tarball\`"
+            echo "- SHA-256: \`$SHA256\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload prepared release artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: gooblin-npm-${{ inputs.version }}-${{ inputs.source_sha }}
+          path: |
+            ${{ steps.pack.outputs.tarball }}
+            ${{ steps.pack.outputs.tarball }}.sha256
+            npm-pack.json
+            release-metadata.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  publish:
+    name: Publish approved npm artifact
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Set up Node and npm trusted publishing
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Download prepared release artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: gooblin-npm-${{ inputs.version }}-${{ inputs.source_sha }}
+          path: release-artifact
+
+      - name: Verify Node and npm minimum versions
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+
+          function parseVersion(version) {
+            const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(version);
+            if (!match) throw new Error(`invalid semantic version: ${version}`);
+            return match.slice(1).map(Number);
+          }
+
+          function meetsMinimum(actual, minimum) {
+            const actualParts = parseVersion(actual);
+            const minimumParts = parseVersion(minimum);
+            for (let index = 0; index < minimumParts.length; index += 1) {
+              if (actualParts[index] !== minimumParts[index]) {
+                return actualParts[index] > minimumParts[index];
+              }
+            }
+            return true;
+          }
+
+          const versions = {
+            Node: [process.versions.node, '22.14.0'],
+            npm: [execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim(), '11.5.1'],
+          };
+          for (const [name, [actual, minimum]] of Object.entries(versions)) {
+            if (!meetsMinimum(actual, minimum)) {
+              console.error(`${name} ${actual} is below required ${minimum}`);
+              process.exit(1);
+            }
+          }
+          NODE
+
+      - name: Verify exact prepared artifact
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_SOURCE_SHA: ${{ inputs.source_sha }}
+          TARBALL: ${{ needs.prepare.outputs.tarball }}
+        run: |
+          set -euo pipefail
+          cd release-artifact
+          sha256sum --check "$TARBALL.sha256"
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { createHash } from 'node:crypto';
+          import fs from 'node:fs';
+
+          function requireNonEmpty(record, fields, label) {
+            for (const field of fields) {
+              if (typeof record[field] !== 'string' || record[field].length === 0) {
+                throw new Error(`${label}.${field} must be a non-empty string`);
+              }
+            }
+          }
+
+          const expectedFiles = [
+            process.env.TARBALL,
+            `${process.env.TARBALL}.sha256`,
+            'npm-pack.json',
+            'release-metadata.json',
+          ].sort();
+          const actualFiles = fs.readdirSync('.').sort();
+          if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) {
+            throw new Error(`unexpected artifact files: ${actualFiles.join(', ')}`);
+          }
+
+          const metadata = JSON.parse(fs.readFileSync('release-metadata.json', 'utf8'));
+          const packs = JSON.parse(fs.readFileSync('npm-pack.json', 'utf8'));
+          if (!Array.isArray(packs) || packs.length !== 1) {
+            throw new Error('npm-pack.json must describe exactly one tarball');
+          }
+          const [pack] = packs;
+          requireNonEmpty(metadata, ['package', 'version', 'source_sha', 'tarball', 'sha256', 'integrity', 'shasum'], 'release-metadata');
+          requireNonEmpty(pack, ['name', 'version', 'filename', 'integrity', 'shasum'], 'npm-pack');
+
+          const tarballBytes = fs.readFileSync(process.env.TARBALL);
+          const recomputed = {
+            sha256: createHash('sha256').update(tarballBytes).digest('hex'),
+            shasum: createHash('sha1').update(tarballBytes).digest('hex'),
+            integrity: `sha512-${createHash('sha512').update(tarballBytes).digest('base64')}`,
+          };
+          const checksumSha256 = fs.readFileSync(`${process.env.TARBALL}.sha256`, 'utf8').trim().split(/\s+/)[0];
+          const packageJson = JSON.parse(execFileSync(
+            'tar',
+            ['-xOf', process.env.TARBALL, 'package/package.json'],
+            { encoding: 'utf8' },
+          ));
+          if (
+            metadata.package !== pack.name
+            || metadata.package !== 'gooblin'
+            || metadata.version !== pack.version
+            || metadata.version !== process.env.INPUT_VERSION
+            || metadata.source_sha !== process.env.INPUT_SOURCE_SHA
+            || metadata.tarball !== pack.filename
+            || metadata.tarball !== process.env.TARBALL
+            || checksumSha256 !== recomputed.sha256
+            || metadata.sha256 !== recomputed.sha256
+            || metadata.shasum !== recomputed.shasum
+            || pack.shasum !== recomputed.shasum
+            || metadata.integrity !== recomputed.integrity
+            || pack.integrity !== recomputed.integrity
+            || pack.filename !== process.env.TARBALL
+            || pack.version !== process.env.INPUT_VERSION
+            || packageJson.name !== 'gooblin'
+            || packageJson.version !== process.env.INPUT_VERSION
+          ) {
+            throw new Error('prepared artifact does not match the approved release inputs');
+          }
+          NODE
+
+      - name: Verify attached draft release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_SOURCE_SHA: ${{ inputs.source_sha }}
+          TARBALL: ${{ needs.prepare.outputs.tarball }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --slurp > "$RUNNER_TEMP/releases.json"
+          gh api "repos/${GITHUB_REPOSITORY}/git/matching-refs/tags/v${INPUT_VERSION}" > "$RUNNER_TEMP/tag-refs.json"
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          if (process.env.GITHUB_REPOSITORY !== 'jsleemaster/gooblin') {
+            throw new Error(`unexpected repository: ${process.env.GITHUB_REPOSITORY}`);
+          }
+          const pages = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/releases.json`, 'utf8'));
+          if (!Array.isArray(pages) || pages.some((page) => !Array.isArray(page))) {
+            throw new Error('GitHub releases response must be paginated arrays');
+          }
+          const expectedTag = `v${process.env.INPUT_VERSION}`;
+          const expectedTagRef = `refs/tags/${expectedTag}`;
+          const tagRefs = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/tag-refs.json`, 'utf8'));
+          if (!Array.isArray(tagRefs) || tagRefs.some((tagRef) => typeof tagRef?.ref !== 'string')) {
+            throw new Error('GitHub matching tag refs response must be an array of refs');
+          }
+          const exactTagRefs = tagRefs.filter((tagRef) => tagRef.ref === expectedTagRef);
+          if (exactTagRefs.length !== 0) {
+            throw new Error(`tag already exists before npm publication: ${expectedTagRef}`);
+          }
+          const matchingDrafts = pages
+            .flat()
+            .filter((release) => release.tag_name === expectedTag && release.draft === true);
+          if (matchingDrafts.length !== 1) {
+            throw new Error(`expected exactly one draft release for ${expectedTag}`);
+          }
+          const [release] = matchingDrafts;
+          if (release.target_commitish !== process.env.INPUT_SOURCE_SHA) {
+            throw new Error('draft release target does not match source_sha');
+          }
+
+          const artifactDir = path.join(process.env.GITHUB_WORKSPACE, 'release-artifact');
+          const expectedAssets = [process.env.TARBALL, `${process.env.TARBALL}.sha256`]
+            .map((name) => ({
+              name,
+              digest: `sha256:${createHash('sha256').update(fs.readFileSync(path.join(artifactDir, name))).digest('hex')}`,
+            }));
+          const actualNames = release.assets.map((asset) => asset.name).sort();
+          const expectedNames = expectedAssets.map((asset) => asset.name).sort();
+          if (JSON.stringify(actualNames) !== JSON.stringify(expectedNames)) {
+            throw new Error(`draft assets do not match: ${actualNames.join(', ')}`);
+          }
+          for (const expected of expectedAssets) {
+            const asset = release.assets.find((candidate) => candidate.name === expected.name);
+            if (asset.state !== 'uploaded' || asset.digest !== expected.digest) {
+              throw new Error(`GitHub digest mismatch for ${expected.name}`);
+            }
+          }
+          NODE
+
+      - name: Publish exact prepared tarball with OIDC
+        run: npm publish "release-artifact/${{ needs.prepare.outputs.tarball }}"
