@@ -16,6 +16,7 @@ Use this matrix as the copy-sync map. When a public behavior changes, update the
 | Adapter or host recipe | `adapters/`, `adapters/README.md`, `README.md`, `docs/install.md`, `docs/plugin-distribution.md`, `docs/compatibility.md`, `docs/verified-install-paths.md` |
 | Plugin manifest or hook behavior | `plugin.yaml`, `.agents/plugins/marketplace.json`, `.claude-plugin/`, `.codex-plugin/`, `hooks/`, `docs/install.md`, `docs/operations.md`, `docs/plugin-distribution.md` |
 | Release or version bump | `package.json`, `plugin.yaml`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `hooks/claude-codex-hooks.json`, `README.md` badge, `docs/releases/`, `docs/compatibility.md`, `docs/verified-install-paths.md` |
+| Supply-chain or release automation | `.github/workflows/`, `scripts/validate-supply-chain.mjs`, `SECURITY.md`, `docs/release-process.md`; pin Actions to a full 40-character commit SHA, publish through OIDC, and protect the `npm-release` environment |
 | Evaluation or benchmark guidance | `docs/benchmarking.md`, `evals/rubric.md`, `evals/fixtures/`, `examples/`, `README.md` Numbers section |
 | Public claim, compatibility claim, or benchmark claim | `README.md`, `docs/claims-policy.md`, `docs/compatibility.md`, `docs/verified-install-paths.md`, `docs/plugin-distribution.md` |
 | Example prompt or expected output | `examples/`, `README.md` Examples table, `evals/fixtures/` if it changes scoring expectations |
@@ -41,4 +42,3 @@ The validation workflow should stay tiny: checkout, Node, `npm run validate`. Do
 - No generated docs index unless manual drift becomes common.
 - No benchmark numbers without method, task set, sample size, limitations, and reproduction instructions.
 - No official host support claims unless the specific installer path has been verified against the released repository.
-

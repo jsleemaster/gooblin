@@ -9,6 +9,7 @@ const scripts = [
   'scripts/validate-hooks.mjs',
   'scripts/validate-maintenance.mjs',
   'scripts/validate-npx-installer.mjs',
+  'scripts/validate-supply-chain.mjs',
   'scripts/validate-claims.mjs',
 ];
 

@@ -32,7 +32,8 @@
     "validate:maintenance": "node scripts/validate-maintenance.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
     "validate:npx-installer": "node scripts/validate-npx-installer.mjs",
-    "validate:skill-pack": "node scripts/validate-skill-pack.mjs"
+    "validate:skill-pack": "node scripts/validate-skill-pack.mjs",
+    "validate:supply-chain": "node scripts/validate-supply-chain.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -55,6 +56,7 @@
     "plugins/",
     "plugin.yaml",
     "LICENSE",
+    "SECURITY.md",
     "README.md"
   ]
 }
