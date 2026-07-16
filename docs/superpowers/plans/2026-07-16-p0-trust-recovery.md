@@ -44,11 +44,13 @@
 
 Create \`scripts/validate-supply-chain.mjs\` with these exact checks:
 
-1. Walk \`.github/workflows/*.yml\`; every \`uses:\` value must match \`owner/repo@<40 lowercase hex characters>\`.
+1. Walk \`.github/workflows/*.yml\`; every \`uses:\` value must match \`owner/repo@<40 lowercase hex characters>\`, and every individual checkout step must set \`persist-credentials: false\`.
 2. \`publish-npm.yml\` must contain:
    - \`workflow_dispatch\`
    - required string inputs \`version\` and \`source_sha\`
    - separate \`prepare\` and \`publish\` jobs
+   - exact indentation-aware trigger, input, top-level permission, and job permission blocks
+   - a global concurrency group \`publish-npm\` with \`cancel-in-progress: false\`
    - \`environment: npm-release\`
    - \`id-token: write\`
    - \`contents: read\`
@@ -58,7 +60,10 @@ Create \`scripts/validate-supply-chain.mjs\` with these exact checks:
    - a check that \`github.ref\` is \`refs/heads/main\`
    - checks that \`github.sha\`, checked-out \`HEAD\`, and live \`origin/main\` all equal \`source_sha\`
    - a check that workflow input \`version\` equals \`package.json\` version
-   - exactly one real \`npm pack --json\`; the publish job must download, verify, and publish that same uploaded workflow artifact without repacking
+   - exactly one dry-run pack and exactly one approved real \`npm pack --json\`; reject every alternate real pack form
+   - the publish job independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI from the downloaded tarball and requires non-empty matching pack/release metadata
+   - a draft release machine gate that uses ephemeral \`github.token\` with \`contents: read\`, requires the exact draft tag and source SHA, and compares the attached tarball/checksum GitHub-reported SHA-256 digests with the downloaded files
+   - the publish job must publish that same uploaded workflow artifact without repacking
 3. \`publish-npm.yml\` must not contain \`NPM_TOKEN\`, \`NODE_AUTH_TOKEN\`, \`secrets.\`, \`pull_request_target\`, or \`persist-credentials: true\`.
 4. \`SECURITY.md\` must link \`https://github.com/jsleemaster/gooblin/security/advisories/new\`, state the supported source/registry boundary, and forbid public disclosure before coordinated review.
 5. \`docs/release-process.md\` must name \`jsleemaster/gooblin\`, \`publish-npm.yml\`, \`npm-release\`, \`npm publish\`, registry verification, source SHA verification, tag/release ordering, and provenance verification.
@@ -101,13 +106,15 @@ Create \`.github/workflows/publish-npm.yml\` with:
 - only \`workflow_dispatch\`;
 - required string inputs \`version\` and \`source_sha\`;
 - workflow-level \`contents: read\` only;
+- global concurrency group \`publish-npm\` with \`cancel-in-progress: false\`;
 - GitHub-hosted \`ubuntu-latest\`;
 - checkout, setup-node, upload-artifact, and download-artifact pinned to verified full SHAs;
 - no dependency installation because the package has no dependencies;
 - a \`prepare\` job with \`contents: read\` only that checks out \`github.sha\`, proves \`github.ref == refs/heads/main\`, proves \`github.sha == source_sha\`, proves checked-out \`HEAD == source_sha\`, proves live \`origin/main == source_sha\`, verifies the package version and clean diff, runs validation, and creates exactly one real tarball with \`npm pack --json\`;
 - the \`prepare\` job records the tarball filename, SHA-256, npm integrity, npm shasum, version, and source SHA, then uploads the tarball, checksum, and metadata as one workflow artifact;
 - a dependent \`publish\` job bound to environment \`npm-release\` with only \`contents: read\` and \`id-token: write\`;
-- the \`publish\` job uses Node 24, \`registry-url: https://registry.npmjs.org\`, and \`package-manager-cache: false\`, downloads that exact artifact, verifies its checksum and metadata, and never runs \`npm pack\` again;
+- the \`publish\` job uses Node 24, \`registry-url: https://registry.npmjs.org\`, and \`package-manager-cache: false\`, downloads that exact artifact, independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI, requires every pack/release metadata field to be non-empty and equal to the recomputed tarball values, and never runs \`npm pack\` again;
+- before publication, a draft release machine gate uses ephemeral \`github.token\` under \`contents: read\` to require exactly one draft \`v<version>\` at \`source_sha\`, exactly the tarball and checksum assets, and GitHub-reported SHA-256 digests matching the downloaded files;
 - \`npm publish <downloaded-tarball>\` as the final mutating command.
 
 The version gate must read \`package.json\` and exit nonzero unless both the input and package version are identical. The publish runtime gate must parse semantic versions and reject Node below \`22.14.0\` or npm below \`11.5.1\`. The workflow must not use \`NPM_TOKEN\`, \`NODE_AUTH_TOKEN\`, or any long-lived secret.
@@ -227,9 +234,11 @@ Only after the draft target and assets are verified, approve the waiting \`npm-r
 Then run:
 
 \`\`\`bash
-npm view gooblin name version dist-tags gitHead dist.integrity --json
+npm view gooblin name version dist-tags dist.integrity --json
 npx --yes gooblin --version
 \`\`\`
+
+Any legacy npm \`gitHead\` is observational only and must not be required for tarball publication. The authoritative source linkage is trusted-publishing provenance that binds the workflow identity and source SHA to the published artifact.
 
 Then install into a fresh temporary project and run \`install --force\`, \`uninstall\`, and \`uninstall --force\` against marked and markerless modified fixtures. Each destructive command must exit nonzero and preserve the complete path/hash snapshot.
 
@@ -242,7 +251,7 @@ gh release edit v1.3.2 --draft=false
 gh release verify v1.3.2
 \`\`\`
 
-Verify the immutable release flag, tag target, release target, npm \`gitHead\`, integrity, signature audit, and provenance all refer to \`S\` and the same tarball.
+Verify the immutable release flag, tag target, release target, integrity, signature audit, and trusted-publishing provenance all refer to \`S\` and the same tarball. If legacy \`gitHead\` metadata is present, record it as an observation rather than a source-linkage requirement.
 
 - [ ] **Step 8: Record only observed post-publish evidence**
 

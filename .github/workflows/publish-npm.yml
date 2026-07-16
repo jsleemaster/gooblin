@@ -15,6 +15,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
 jobs:
   prepare:
     name: Prepare immutable npm artifact
@@ -223,6 +227,14 @@ jobs:
           import { createHash } from 'node:crypto';
           import fs from 'node:fs';
 
+          function requireNonEmpty(record, fields, label) {
+            for (const field of fields) {
+              if (typeof record[field] !== 'string' || record[field].length === 0) {
+                throw new Error(`${label}.${field} must be a non-empty string`);
+              }
+            }
+          }
+
           const expectedFiles = [
             process.env.TARBALL,
             `${process.env.TARBALL}.sha256`,
@@ -235,27 +247,98 @@ jobs:
           }
 
           const metadata = JSON.parse(fs.readFileSync('release-metadata.json', 'utf8'));
-          const [pack] = JSON.parse(fs.readFileSync('npm-pack.json', 'utf8'));
-          const sha256 = createHash('sha256').update(fs.readFileSync(process.env.TARBALL)).digest('hex');
+          const packs = JSON.parse(fs.readFileSync('npm-pack.json', 'utf8'));
+          if (!Array.isArray(packs) || packs.length !== 1) {
+            throw new Error('npm-pack.json must describe exactly one tarball');
+          }
+          const [pack] = packs;
+          requireNonEmpty(metadata, ['package', 'version', 'source_sha', 'tarball', 'sha256', 'integrity', 'shasum'], 'release-metadata');
+          requireNonEmpty(pack, ['name', 'version', 'filename', 'integrity', 'shasum'], 'npm-pack');
+
+          const tarballBytes = fs.readFileSync(process.env.TARBALL);
+          const recomputed = {
+            sha256: createHash('sha256').update(tarballBytes).digest('hex'),
+            shasum: createHash('sha1').update(tarballBytes).digest('hex'),
+            integrity: `sha512-${createHash('sha512').update(tarballBytes).digest('base64')}`,
+          };
+          const checksumSha256 = fs.readFileSync(`${process.env.TARBALL}.sha256`, 'utf8').trim().split(/\s+/)[0];
           const packageJson = JSON.parse(execFileSync(
             'tar',
             ['-xOf', process.env.TARBALL, 'package/package.json'],
             { encoding: 'utf8' },
           ));
           if (
-            metadata.package !== 'gooblin'
+            metadata.package !== pack.name
+            || metadata.package !== 'gooblin'
+            || metadata.version !== pack.version
             || metadata.version !== process.env.INPUT_VERSION
             || metadata.source_sha !== process.env.INPUT_SOURCE_SHA
+            || metadata.tarball !== pack.filename
             || metadata.tarball !== process.env.TARBALL
-            || metadata.sha256 !== sha256
-            || metadata.integrity !== pack.integrity
-            || metadata.shasum !== pack.shasum
+            || checksumSha256 !== recomputed.sha256
+            || metadata.sha256 !== recomputed.sha256
+            || metadata.shasum !== recomputed.shasum
+            || pack.shasum !== recomputed.shasum
+            || metadata.integrity !== recomputed.integrity
+            || pack.integrity !== recomputed.integrity
             || pack.filename !== process.env.TARBALL
             || pack.version !== process.env.INPUT_VERSION
             || packageJson.name !== 'gooblin'
             || packageJson.version !== process.env.INPUT_VERSION
           ) {
             throw new Error('prepared artifact does not match the approved release inputs');
+          }
+          NODE
+
+      - name: Verify attached draft release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_SOURCE_SHA: ${{ inputs.source_sha }}
+          TARBALL: ${{ needs.prepare.outputs.tarball }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --slurp > "$RUNNER_TEMP/releases.json"
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          if (process.env.GITHUB_REPOSITORY !== 'jsleemaster/gooblin') {
+            throw new Error(`unexpected repository: ${process.env.GITHUB_REPOSITORY}`);
+          }
+          const pages = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/releases.json`, 'utf8'));
+          if (!Array.isArray(pages) || pages.some((page) => !Array.isArray(page))) {
+            throw new Error('GitHub releases response must be paginated arrays');
+          }
+          const expectedTag = `v${process.env.INPUT_VERSION}`;
+          const matchingDrafts = pages
+            .flat()
+            .filter((release) => release.tag_name === expectedTag && release.draft === true);
+          if (matchingDrafts.length !== 1) {
+            throw new Error(`expected exactly one draft release for ${expectedTag}`);
+          }
+          const [release] = matchingDrafts;
+          if (release.target_commitish !== process.env.INPUT_SOURCE_SHA) {
+            throw new Error('draft release target does not match source_sha');
+          }
+
+          const artifactDir = path.join(process.env.GITHUB_WORKSPACE, 'release-artifact');
+          const expectedAssets = [process.env.TARBALL, `${process.env.TARBALL}.sha256`]
+            .map((name) => ({
+              name,
+              digest: `sha256:${createHash('sha256').update(fs.readFileSync(path.join(artifactDir, name))).digest('hex')}`,
+            }));
+          const actualNames = release.assets.map((asset) => asset.name).sort();
+          const expectedNames = expectedAssets.map((asset) => asset.name).sort();
+          if (JSON.stringify(actualNames) !== JSON.stringify(expectedNames)) {
+            throw new Error(`draft assets do not match: ${actualNames.join(', ')}`);
+          }
+          for (const expected of expectedAssets) {
+            const asset = release.assets.find((candidate) => candidate.name === expected.name);
+            if (asset.state !== 'uploaded' || asset.digest !== expected.digest) {
+              throw new Error(`GitHub digest mismatch for ${expected.name}`);
+            }
           }
           NODE
 

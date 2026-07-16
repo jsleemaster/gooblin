@@ -25,6 +25,101 @@ function requirePattern(text, pattern, message) {
   check(pattern.test(text), message);
 }
 
+function indentOf(line) {
+  return line.match(/^ */)[0].length;
+}
+
+function findYamlBlock(lines, key, indent, start = 0, end = lines.length, label = key) {
+  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(`^ {${indent}}${escapedKey}:\\s*(.*)$`);
+  for (let index = start; index < end; index += 1) {
+    const match = lines[index].match(pattern);
+    if (!match) continue;
+    let blockEnd = end;
+    for (let cursor = index + 1; cursor < end; cursor += 1) {
+      const trimmed = lines[cursor].trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      if (indentOf(lines[cursor]) <= indent) {
+        blockEnd = cursor;
+        break;
+      }
+    }
+    return { key, indent, start: index, end: blockEnd, value: match[1].trim() };
+  }
+  failures.push(`${publishFile} missing ${label} block`);
+  return null;
+}
+
+function directYamlEntries(lines, block) {
+  if (!block) return [];
+  const childIndent = block.indent + 2;
+  const entries = [];
+  for (let index = block.start + 1; index < block.end; index += 1) {
+    if (indentOf(lines[index]) !== childIndent) continue;
+    const match = lines[index].match(/^\s*([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (match) entries.push({ key: match[1], value: match[2].trim(), line: index + 1 });
+  }
+  return entries;
+}
+
+function directYamlValue(lines, block, key) {
+  const matches = directYamlEntries(lines, block).filter((entry) => entry.key === key);
+  check(matches.length === 1, `${publishFile} ${block?.key || 'missing block'} must define ${key} exactly once`);
+  return matches[0]?.value;
+}
+
+function requireExactKeys(lines, block, expected, label) {
+  const actual = directYamlEntries(lines, block).map((entry) => entry.key).sort();
+  const wanted = [...expected].sort();
+  check(JSON.stringify(actual) === JSON.stringify(wanted), `${publishFile} ${label} keys must be exactly: ${wanted.join(', ')}`);
+}
+
+function yamlStepItems(lines, jobBlock) {
+  if (!jobBlock) return [];
+  const steps = findYamlBlock(lines, 'steps', jobBlock.indent + 2, jobBlock.start + 1, jobBlock.end, `${jobBlock.key}.steps`);
+  if (!steps) return [];
+  const itemIndent = steps.indent + 2;
+  const starts = [];
+  for (let index = steps.start + 1; index < steps.end; index += 1) {
+    const match = lines[index].match(new RegExp(`^ {${itemIndent}}- name:\\s*(.+)$`));
+    if (match) starts.push({ start: index, name: match[1].trim() });
+  }
+  return starts.map((item, index) => ({
+    ...item,
+    indent: itemIndent,
+    end: starts[index + 1]?.start ?? steps.end,
+    text: lines.slice(item.start, starts[index + 1]?.start ?? steps.end).join('\n'),
+  }));
+}
+
+function shellCommands(lines) {
+  const commands = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = lines[index].match(/^(\s*)run:\s*(.*)$/);
+    if (!match) continue;
+    const runIndent = match[1].length;
+    const value = match[2].trim();
+    if (value && value !== '|' && value !== '>') {
+      commands.push({ line: index + 1, text: value.replace(/\s+/g, ' ').trim() });
+      continue;
+    }
+    let heredoc = null;
+    for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+      const trimmed = lines[cursor].trim();
+      if (trimmed && indentOf(lines[cursor]) <= runIndent) break;
+      if (!trimmed) continue;
+      if (heredoc) {
+        if (trimmed === heredoc) heredoc = null;
+        continue;
+      }
+      commands.push({ line: cursor + 1, text: trimmed.replace(/\s+/g, ' ') });
+      const delimiter = trimmed.match(/<<-?['"]?([A-Za-z_][A-Za-z0-9_]*)['"]?/);
+      if (delimiter) heredoc = delimiter[1];
+    }
+  }
+  return commands;
+}
+
 const workflowDir = '.github/workflows';
 const workflowFiles = fs.readdirSync(workflowDir)
   .filter((name) => name.endsWith('.yml'))
@@ -43,8 +138,32 @@ for (const name of workflowFiles) {
     );
   }
 
-  if (text.includes('actions/checkout@')) {
-    requireText(text, 'persist-credentials: false', file);
+  const lines = text.split('\n');
+  for (const [index, line] of lines.entries()) {
+    if (!line.includes('uses: actions/checkout@')) continue;
+    const inlineUses = /^\s*-\s*uses:/.test(line);
+    const propertyIndent = indentOf(line) + (inlineUses ? 2 : 0);
+    const itemIndent = propertyIndent - 2;
+    let itemStart = index;
+    for (let cursor = index; cursor >= 0; cursor -= 1) {
+      if (indentOf(lines[cursor]) === itemIndent && /^\s*-\s+/.test(lines[cursor])) {
+        itemStart = cursor;
+        break;
+      }
+    }
+    let itemEnd = lines.length;
+    for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+      if (indentOf(lines[cursor]) === itemIndent && /^\s*-\s+/.test(lines[cursor])) {
+        itemEnd = cursor;
+        break;
+      }
+    }
+    const checkoutStep = lines.slice(itemStart, itemEnd);
+    const persistLines = checkoutStep.filter((candidate) => (
+      indentOf(candidate) === propertyIndent + 2
+      && candidate.trim() === 'persist-credentials: false'
+    ));
+    check(persistLines.length === 1, `${file}:${index + 1} checkout step must set persist-credentials: false exactly once`);
   }
 }
 
@@ -52,28 +171,116 @@ const publishFile = '.github/workflows/publish-npm.yml';
 const publish = readRequired(publishFile);
 
 if (publish) {
+  const publishLines = publish.split('\n');
+  const onBlock = findYamlBlock(publishLines, 'on', 0, 0, publishLines.length, 'top-level on');
+  requireExactKeys(publishLines, onBlock, ['workflow_dispatch'], 'trigger');
+  const dispatchBlock = findYamlBlock(publishLines, 'workflow_dispatch', 2, onBlock?.start + 1, onBlock?.end, 'workflow_dispatch');
+  requireExactKeys(publishLines, dispatchBlock, ['inputs'], 'workflow_dispatch');
+  const inputsBlock = findYamlBlock(publishLines, 'inputs', 4, dispatchBlock?.start + 1, dispatchBlock?.end, 'workflow_dispatch.inputs');
+  requireExactKeys(publishLines, inputsBlock, ['source_sha', 'version'], 'workflow inputs');
+  for (const inputName of ['version', 'source_sha']) {
+    const inputBlock = findYamlBlock(publishLines, inputName, 6, inputsBlock?.start + 1, inputsBlock?.end, `input ${inputName}`);
+    check(directYamlValue(publishLines, inputBlock, 'required') === 'true', `${publishFile} ${inputName} must be required`);
+    check(directYamlValue(publishLines, inputBlock, 'type') === 'string', `${publishFile} ${inputName} must have type string`);
+  }
+
+  const topPermissions = findYamlBlock(publishLines, 'permissions', 0, 0, publishLines.length, 'top-level permissions');
+  requireExactKeys(publishLines, topPermissions, ['contents'], 'top-level permissions');
+  check(directYamlValue(publishLines, topPermissions, 'contents') === 'read', `${publishFile} top-level contents permission must be read`);
+
+  const concurrency = findYamlBlock(publishLines, 'concurrency', 0, 0, publishLines.length, 'top-level concurrency');
+  requireExactKeys(publishLines, concurrency, ['cancel-in-progress', 'group'], 'concurrency');
+  check(directYamlValue(publishLines, concurrency, 'group') === 'publish-npm', `${publishFile} concurrency group must be publish-npm`);
+  check(directYamlValue(publishLines, concurrency, 'cancel-in-progress') === 'false', `${publishFile} must not cancel an in-progress publish`);
+
+  const jobsBlock = findYamlBlock(publishLines, 'jobs', 0, 0, publishLines.length, 'jobs');
+  requireExactKeys(publishLines, jobsBlock, ['prepare', 'publish'], 'jobs');
+  const prepareJobBlock = findYamlBlock(publishLines, 'prepare', 2, jobsBlock?.start + 1, jobsBlock?.end, 'prepare job');
+  const publishJobBlock = findYamlBlock(publishLines, 'publish', 2, jobsBlock?.start + 1, jobsBlock?.end, 'publish job');
+  const preparePermissions = findYamlBlock(publishLines, 'permissions', 4, prepareJobBlock?.start + 1, prepareJobBlock?.end, 'prepare permissions');
+  requireExactKeys(publishLines, preparePermissions, ['contents'], 'prepare permissions');
+  check(directYamlValue(publishLines, preparePermissions, 'contents') === 'read', `${publishFile} prepare contents permission must be read`);
+  check(!directYamlEntries(publishLines, prepareJobBlock).some((entry) => entry.key === 'environment'), `${publishFile} prepare job must not use an environment`);
+  const publishPermissions = findYamlBlock(publishLines, 'permissions', 4, publishJobBlock?.start + 1, publishJobBlock?.end, 'publish permissions');
+  requireExactKeys(publishLines, publishPermissions, ['contents', 'id-token'], 'publish permissions');
+  check(directYamlValue(publishLines, publishPermissions, 'contents') === 'read', `${publishFile} publish contents permission must be read`);
+  check(directYamlValue(publishLines, publishPermissions, 'id-token') === 'write', `${publishFile} publish id-token permission must be write`);
+  check(directYamlValue(publishLines, publishJobBlock, 'needs') === 'prepare', `${publishFile} publish must need prepare`);
+  check(directYamlValue(publishLines, publishJobBlock, 'environment') === 'npm-release', `${publishFile} publish environment must be npm-release`);
+
+  const commands = shellCommands(publishLines);
+  const packCommands = commands.filter((command) => (
+    !/^(?:#|echo\b|printf\b)/.test(command.text)
+    && /\bnpm(?:\s+--[^\s]+)*\s+pack\b/.test(command.text)
+  ));
+  const dryRuns = packCommands.filter((command) => command.text === 'npm pack --dry-run');
+  const realPacks = packCommands.filter((command) => command.text !== 'npm pack --dry-run');
+  check(dryRuns.length === 1, `${publishFile} must run exactly one npm pack --dry-run`);
+  check(realPacks.length === 1 && realPacks[0]?.text === 'npm pack --json > npm-pack.json', `${publishFile} must run exactly one approved real npm pack --json and no alternate repack`);
+
+  const publishSteps = yamlStepItems(publishLines, publishJobBlock);
+  const prepareSteps = yamlStepItems(publishLines, prepareJobBlock);
+  const artifactName = 'gooblin-npm-${{ inputs.version }}-${{ inputs.source_sha }}';
+  const uploadStep = prepareSteps.find((step) => step.name === 'Upload prepared release artifact');
+  const downloadStep = publishSteps.find((step) => step.name === 'Download prepared release artifact');
+  check(Boolean(uploadStep) && Boolean(downloadStep), `${publishFile} must upload and download the prepared artifact`);
+  if (uploadStep && downloadStep) {
+    const uploadWith = findYamlBlock(publishLines, 'with', 8, uploadStep.start + 1, uploadStep.end, 'artifact upload with');
+    const downloadWith = findYamlBlock(publishLines, 'with', 8, downloadStep.start + 1, downloadStep.end, 'artifact download with');
+    check(directYamlValue(publishLines, uploadWith, 'name') === artifactName, `${publishFile} upload artifact name must bind version and source_sha`);
+    check(directYamlValue(publishLines, downloadWith, 'name') === artifactName, `${publishFile} download must use the same artifact name`);
+  }
+
+  const artifactStep = publishSteps.find((step) => step.name === 'Verify exact prepared artifact');
+  check(Boolean(artifactStep), `${publishFile} publish job missing exact artifact verification step`);
+  if (artifactStep) {
+    for (const value of [
+      "createHash('sha256')",
+      "createHash('sha1')",
+      "createHash('sha512')",
+      ".digest('base64')",
+      "requireNonEmpty(metadata, ['package', 'version', 'source_sha', 'tarball', 'sha256', 'integrity', 'shasum']",
+      "requireNonEmpty(pack, ['name', 'version', 'filename', 'integrity', 'shasum']",
+      'checksumSha256 !== recomputed.sha256',
+      'metadata.package !== pack.name',
+      'metadata.version !== pack.version',
+      'metadata.tarball !== pack.filename',
+      'metadata.sha256 !== recomputed.sha256',
+      'metadata.shasum !== recomputed.shasum',
+      'pack.shasum !== recomputed.shasum',
+      'metadata.integrity !== recomputed.integrity',
+      'pack.integrity !== recomputed.integrity',
+    ]) requireText(artifactStep.text, value, `${publishFile} artifact verification step`);
+  }
+
+  const draftStep = publishSteps.find((step) => step.name === 'Verify attached draft release assets');
+  check(Boolean(draftStep), `${publishFile} publish job missing draft release machine gate`);
+  if (draftStep) {
+    const draftEnv = findYamlBlock(publishLines, 'env', 8, draftStep.start + 1, draftStep.end, 'draft release gate env');
+    requireExactKeys(publishLines, draftEnv, ['GH_TOKEN', 'INPUT_SOURCE_SHA', 'INPUT_VERSION', 'TARBALL'], 'draft release gate env');
+    check(directYamlValue(publishLines, draftEnv, 'GH_TOKEN') === '${{ github.token }}', `${publishFile} draft gate must use ephemeral github.token`);
+    for (const value of [
+      'gh api --paginate',
+      'release.tag_name === expectedTag && release.draft === true',
+      'matchingDrafts.length !== 1',
+      'release.target_commitish !== process.env.INPUT_SOURCE_SHA',
+      'JSON.stringify(actualNames) !== JSON.stringify(expectedNames)',
+      'asset.digest !== expected.digest',
+      'sha256:',
+    ]) {
+      requireText(draftStep.text, value, `${publishFile} draft release machine gate`);
+    }
+    const publishStepIndex = publishSteps.findIndex((step) => step.name === 'Publish exact prepared tarball with OIDC');
+    check(publishSteps.indexOf(draftStep) > publishSteps.indexOf(artifactStep) && publishSteps.indexOf(draftStep) < publishStepIndex, `${publishFile} draft gate must run after artifact verification and before npm publish`);
+  }
+
   for (const [pattern, description] of [
-    [/^\s{2}workflow_dispatch:\s*$/m, 'workflow_dispatch'],
-    [/^\s{6}version:\s*$/m, 'required version input'],
-    [/^\s{6}source_sha:\s*$/m, 'required source_sha input'],
-    [/^\s{2}prepare:\s*$/m, 'prepare job'],
-    [/^\s{2}publish:\s*$/m, 'publish job'],
-    [/^\s*environment:\s*npm-release\s*$/m, 'npm-release environment'],
-    [/^\s*id-token:\s*write\s*$/m, 'id-token: write permission'],
-    [/^\s*contents:\s*read\s*$/m, 'contents: read permission'],
     [/^\s*node-version:\s*['"]?24['"]?\s*$/m, 'Node 24'],
     [/^\s*package-manager-cache:\s*false\s*$/m, 'disabled package-manager cache'],
     [/^\s*registry-url:\s*https:\/\/registry\.npmjs\.org\s*$/m, 'npm registry URL'],
     [/^\s*runs-on:\s*ubuntu-latest\s*$/m, 'GitHub-hosted Ubuntu runner'],
   ]) {
     requirePattern(publish, pattern, `${publishFile} missing ${description}`);
-  }
-
-  check((publish.match(/^\s*required:\s*true\s*$/gm) || []).length >= 2, `${publishFile} inputs must be required`);
-  check((publish.match(/^\s*type:\s*string\s*$/gm) || []).length >= 2, `${publishFile} inputs must be strings`);
-
-  for (const trigger of ['pull_request', 'push', 'schedule', 'workflow_call', 'repository_dispatch']) {
-    check(!new RegExp(`^  ${trigger}:`, 'm').test(publish), `${publishFile} must only use workflow_dispatch`);
   }
 
   for (const value of [
@@ -97,12 +304,9 @@ if (publish) {
     'meetsMinimum',
     'npm run validate',
     'git diff --check',
-    'npm pack --dry-run',
-    'npm pack --json',
     'sha256sum',
     'npm-pack.json',
     'release-metadata.json',
-    'needs: prepare',
     'npm publish',
   ]) {
     requireText(publish, value, publishFile);
@@ -111,12 +315,6 @@ if (publish) {
   requireText(publish, 'ref: ${{ github.sha }}', publishFile);
   check(!publish.includes('ref: ${{ inputs.source_sha }}'), `${publishFile} must not check out the unverified source_sha input`);
 
-  check((publish.match(/npm pack --json/g) || []).length === 1, `${publishFile} must create exactly one real tarball`);
-  const artifactName = 'gooblin-npm-${{ inputs.version }}-${{ inputs.source_sha }}';
-  check(
-    (publish.match(new RegExp(artifactName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length === 2,
-    `${publishFile} prepare and publish jobs must use the same workflow artifact`,
-  );
   requireText(publish, 'sha256sum --check', publishFile);
   requireText(publish, 'release-artifact/${{ needs.prepare.outputs.tarball }}', publishFile);
   requireText(publish, 'npm publish "release-artifact/${{ needs.prepare.outputs.tarball }}"', publishFile);
@@ -124,15 +322,6 @@ if (publish) {
     publish.trimEnd().endsWith('run: npm publish "release-artifact/${{ needs.prepare.outputs.tarball }}"'),
     `${publishFile} must end with publishing the prepared tarball`,
   );
-
-  const prepareStart = publish.indexOf('\n  prepare:');
-  const publishStart = publish.indexOf('\n  publish:');
-  const prepareJob = publish.slice(prepareStart, publishStart);
-  const publishJob = publish.slice(publishStart);
-  check(!prepareJob.includes('id-token:'), `${publishFile} prepare job must not receive id-token permission`);
-  check(!prepareJob.includes('environment:'), `${publishFile} prepare job must not use a protected environment`);
-  requireText(publishJob, 'environment: npm-release', `${publishFile} publish job`);
-  requireText(publishJob, 'id-token: write', `${publishFile} publish job`);
 
   for (const forbidden of [
     'NPM_TOKEN',
@@ -192,9 +381,43 @@ if (release) {
     'immutable release',
     'tag',
     'observed output',
+    'machine gate',
+    'GitHub-reported SHA-256',
+    'legacy npm `gitHead` is observational only',
+    'trusted-publishing provenance',
   ]) {
     requireText(release, value, releaseFile);
   }
+}
+
+const planFile = 'docs/superpowers/plans/2026-07-16-p0-trust-recovery.md';
+const plan = readRequired(planFile);
+if (plan) {
+  const task1Start = plan.indexOf('### Task 1:');
+  const task2Start = plan.indexOf('### Task 2:');
+  const task3Start = plan.indexOf('### Task 3:');
+  const normalizedTask1 = plan.slice(task1Start, task2Start).replace(/\\`/g, '`');
+  const task2 = plan.slice(task2Start, task3Start);
+  const normalizedTask2 = task2.replace(/\\`/g, '`');
+  check(task1Start > -1 && task2Start > task1Start && task3Start > task2Start, `${planFile} must contain bounded Task 1, Task 2, and Task 3 sections`);
+  for (const value of [
+    'concurrency group `publish-npm` with `cancel-in-progress: false`',
+    'independently recomputes SHA-256, SHA-1 shasum, and SHA-512 SRI',
+    'draft release machine gate',
+    'GitHub-reported SHA-256 digests',
+  ]) {
+    requireText(normalizedTask1, value, `${planFile} Task 1`);
+  }
+  for (const value of [
+    'legacy npm `gitHead` is observational only',
+    'must not be required for tarball publication',
+    'trusted-publishing provenance',
+    'workflow identity and source SHA',
+  ]) {
+    requireText(normalizedTask2, value, `${planFile} Task 2`);
+  }
+  check(!normalizedTask2.includes('npm view gooblin name version dist-tags gitHead'), `${planFile} Task 2 registry gate must not require gitHead`);
+  check(!normalizedTask2.includes('npm `gitHead`, integrity'), `${planFile} Task 2 source-linkage gate must not require gitHead`);
 }
 
 const maintenanceFile = 'docs/maintenance.md';
